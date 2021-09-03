@@ -4,28 +4,13 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <!--
 
-    if a /admin/module/shoppingfeed/ route is provided, a "Configuration" button will be displayed
-    for the module in the module list. Clicking this button will invoke this route.
-
-    <route id="my_route_id" path="/admin/module/shoppingfeed">
-        <default key="_controller">ShoppingFeed\Full\Class\Name\Of\YourConfigurationController::methodName</default>
+    <route id="my_route_id" path="/admin/module/ShoppingFeed">
+        <default key="_controller">ShoppingFeed\Controller\ConfigurationController::viewAction</default>
     </route>
 
-    <route id="my_route_id" path="/admin/module/shoppingfeed/route-name">
-        <default key="_controller">ShoppingFeed\Full\Class\Name\Of\YourAdminController::methodName</default>
+    <route id="creditAccount.configuration.save" path="/admin/module/ShoppingFeed/config/save" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\ConfigurationController::saveAction</default>
     </route>
-
-    <route id="my_route_id" path="/my/route/name">
-        <default key="_controller">ShoppingFeed\Full\Class\Name\Of\YourOtherController::methodName</default>
-    </route>
-
-    ...add as many routes as required.
-
-    <route>
-    ...
-    </route>
-    -->
 
 </routes>

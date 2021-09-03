@@ -1,4 +1,4 @@
 <?php
 return array(
-    // 'an english string' => 'La traduction française de la chaine',
+    'Authentication token' => 'Token d\'authentification',
 );

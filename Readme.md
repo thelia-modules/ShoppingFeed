@@ -1,6 +1,6 @@
 # Shopping Feed
 
-Add a short description here. You can also add a screenshot if needed.
+Send your catalog to different channel like Amazon, Metro, C-Discount,... through ShoppingFeed API.
 
 ## Installation
 
@@ -14,42 +14,12 @@ Add a short description here. You can also add a screenshot if needed.
 Add it in your main thelia composer.json file
 
 ```
-composer require your-vendor/shopping-feed-module:~1.0
+composer require thelia/shopping-feed-module:~1.0
 ```
 
 ## Usage
 
-Explain here how to use your module, how to configure it, etc.
+This module uses [ShoppingFeed API](https://developer.shopping-feed.com/getting-started/introduction).
 
-## Hook
-
-If your module use one or more hook, fill this part. Explain which hooks are used.
-
-
-## Loop
-
-If your module declare one or more loop, describe them here like this :
-
-[loop name]
-
-### Input arguments
-
-|Argument |Description |
-|---      |--- |
-|**arg1** | describe arg1 with an exemple. |
-|**arg2** | describe arg2 with an exemple. |
-
-### Output arguments
-
-|Variable   |Description |
-|---        |--- |
-|$VAR1    | describe $VAR1 variable |
-|$VAR2    | describe $VAR2 variable |
-
-### Exemple
-
-Add a complete exemple of your loop
-
-## Other ?
-
-If you have other think to put, feel free to complete your readme as you want.
+Set your different feeds in the configuration menu. 
+A feed is a combination of a catalog and a channel (Amazon, Metro,..). You can select products from your thelia catalog in the feed edition page.

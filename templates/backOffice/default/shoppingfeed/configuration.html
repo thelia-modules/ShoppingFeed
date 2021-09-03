@@ -1,0 +1,81 @@
+{extends file="admin-layout.tpl"}
+
+{block name="after-bootstrap-css"}
+
+{/block}
+
+{block name="no-return-functions"}
+    {$admin_current_location = 'module'}
+{/block}
+
+{block name="page-title"}{intl l='ShoppingFeed module configuration' d='shoppingfeed.bo.default'}{/block}
+
+{block name="check-resource"}admin.module{/block}
+{block name="check-access"}view{/block}
+{block name="check-module"}ShoppingFeed{/block}
+
+{block name="main-content"}
+{$current_tab = $smarty.get.current_tab|default:"configuration"}
+<div class="modules-configure">
+    <div id="wrapper" class="container">
+        <div class="clearfix">
+            <ul class="breadcrumb pull-left">
+                <li><a href="{url path='/admin/home'}">{intl l="Home"}</a></li>
+                <li><a href="{url path='/admin/modules'}">{intl l="Modules"}</a></li>
+                <li><a href="#">{intl l="Configure"}
+                        : {loop type="module" name="module-name" code='shoppingfeed'}{$CODE} - {$TITLE}{/loop}</a></li>
+            </ul>
+        </div>
+
+        <div class="general-block-decorator" id="ShoppingFeed">
+
+            <div class="row">
+                <div class="col-md-12">
+                        <!-- Tab menu -->
+                        <ul id="tabbed-menu" class="nav nav-tabs">
+                            <li {if $current_tab === "configuration"}class="active"{/if}><a data-toggle="tab" href="#configuration">{intl l="Configuration"  d='shoppingfeed.bo.default'}</a> </li>
+                            <li {if $current_tab === "feeds"}class="active"{/if}><a data-toggle="tab" href="#feeds">{intl l="Feeds"  d='shoppingfeed.bo.default'}</a></li>
+                            <li {if $current_tab === "logs"}class="active"{/if}><a data-toggle="tab" href="#logs">{intl l="Logs"  d='shoppingfeed.bo.default'}</a></li>
+                        </ul>
+
+                    <div class="tab-content">
+                        <div id="configuration" class="tab-pane {if $current_tab === "configuration"}active{/if} form-container">
+                            {form name="shoppingfeed_configuration_form"}
+                                <form action="{url path="/admin/module/ShoppingFeed/config/save"}" method="post">
+                                    {form_hidden_fields form=$form}
+
+                                    {if $form_error}
+                                        <div class="alert alert-danger">{$form_error_message}</div>
+                                    {/if}
+
+                                    {form_field form=$form field='success_url'}
+                                        <input type="hidden" name="{$name}" value="{url path={navigate to="current"}}"/>
+                                    {/form_field}
+
+                                    <div class="panel-body">
+                                        <div class="col-md-12">
+                                            {render_form_field form=$form field="auth_token" value={$data}}
+                                        </div>
+                                        <div class="col-md-12">
+                                            <input type="submit" class="btn btn-success form-control">
+                                        </div>
+                                    </div>
+                                </form>
+                            {/form}
+                        </div>
+                        <div id="feeds" class="tab-pane {if $current_tab === "feeds"}active{/if} form-container">
+                            <div>Bonjour les feeds</div>
+                        </div>
+                        <div id="logs" class="tab-pane {if $current_tab === "logs"}active{/if} form-container">
+                            <div>Bonjour les logs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/block}
+
+    {block name="javascript-initialization"}
+
+{/block}
