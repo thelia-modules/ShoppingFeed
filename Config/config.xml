@@ -4,8 +4,24 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
-
     <forms>
         <form name="shoppingfeed_configuration_form" class="ShoppingFeed\Form\ConfigurationForm" />
+        <form name="shoppingfeed_feed_configuration_form" class="ShoppingFeed\Form\FeedConfigurationForm" />
     </forms>
+
+    <commands>
+        <command class="ShoppingFeed\Command\GenerateFeedCommand" />
+        <command class="ShoppingFeed\Command\SynchronizeOrderCommand" />
+    </commands>
+
+    <services>
+        <service id="shopping_feed_feed_service" class="ShoppingFeed\Service\FeedService">
+            <argument type="service" id="event_dispatcher" />
+        </service>
+        <service id="shopping_feed_api_service" class="ShoppingFeed\Service\ApiService">
+        </service>
+        <service id="shopping_feed_order_service" class="ShoppingFeed\Service\OrderService">
+            <argument type="service" id="shopping_feed_api_service" />
+        </service>
+    </services>
 </config>

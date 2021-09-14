@@ -9,8 +9,19 @@
         <default key="_controller">ShoppingFeed\Controller\ConfigurationController::viewAction</default>
     </route>
 
-    <route id="creditAccount.configuration.save" path="/admin/module/ShoppingFeed/config/save" methods="post">
-        <default key="_controller">ShoppingFeed\Controller\ConfigurationController::saveAction</default>
+    <route id="TEST" path="/admin/module/ShoppingFeed/test">
+        <default key="_controller">ShoppingFeed\Controller\ConfigurationController::testAction</default>
     </route>
 
+    <route id="ShoppingFeed.feed.configuration.create" path="/admin/module/ShoppingFeed/config" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\FeedConfigurationController::createAction</default>
+    </route>
+
+    <route id="ShoppingFeed.feed.configuration.update" path="/admin/module/ShoppingFeed/config/{configId}" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\FeedConfigurationController::updateAction</default>
+    </route>
+
+    <route id="ShoppingFeed.feed.configuration.delete" path="/admin/module/ShoppingFeed/config/delete/{configId}">
+        <default key="_controller">ShoppingFeed\Controller\FeedConfigurationController::deleteAction</default>
+    </route>
 </routes>

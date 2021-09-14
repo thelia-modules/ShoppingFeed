@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database defaultIdMethod="native" name="thelia"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="../../../vendor/thelia/propel/resources/xsd/database.xsd" >
-    <!--
-    See propel documentation on http://propelorm.org for all information about schema file
+          xsi:noNamespaceSchemaLocation="../../../../vendor/thelia/propel/resources/xsd/database.xsd" >
 
-    <table name="product_rel" namespace="ShoppingFeed\Model">
+    <table name="shopping_feed_config" namespace="ShoppingFeed\Model">
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
-        <column defaultValue="0" name="visible" required="true" type="TINYINT" />
-        <column defaultValue="0" name="position" required="true" type="INTEGER" />
-        <column name="title" size="255" type="VARCHAR" />
-        <column name="description" type="CLOB" />
-        <column name="chapo" type="LONGVARCHAR" />
-        <column name="postscriptum" type="LONGVARCHAR" />
-        <foreign-key foreignTable="product" name="fk_product_id" onDelete="CASCADE" onUpdate="RESTRICT">
-            <reference foreign="id" local="product_id" />
+        <column name="store_id" type="VARCHAR" />
+        <column name="country_id" type="INTEGER" />
+        <column name="lang_id" type="INTEGER" />
+        <column name="api_token" type="VARCHAR" />
+        <foreign-key foreignTable="country" name="fk_shopping_feed_config_country_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="country_id" />
+        </foreign-key>
+        <foreign-key foreignTable="lang" name="fk_shopping_feed_config_lang_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="lang_id" />
         </foreign-key>
         <behavior name="timestampable" />
-        <behavior name="i18n">
-            <parameter name="i18n_columns" value="title, description, chapo, postscriptum" />
-        </behavior>
     </table>
-    -->
+
+    <table name="shopping_feed_order_data" namespace="ShoppingFeed\Model">
+        <column name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="channel" type="VARCHAR" />
+        <column name="external_reference" type="VARCHAR" />
+        <column name="email" type="VARCHAR" />
+        <foreign-key foreignTable="order" name="shopping_feed_order_data_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="id" />
+        </foreign-key>
+    </table>
+
+    <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>

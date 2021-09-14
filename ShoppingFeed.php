@@ -12,6 +12,10 @@
 
 namespace ShoppingFeed;
 
+use Thelia\Model\Customer;
+use Thelia\Model\CustomerQuery;
+use Thelia\Model\CustomerTitleQuery;
+use Thelia\Model\LangQuery;
 use Thelia\Module\BaseModule;
 
 class ShoppingFeed extends BaseModule
@@ -25,4 +29,32 @@ class ShoppingFeed extends BaseModule
      *
      * Have fun !
      */
+
+    public static function getSoppingFeedCustomer()
+    {
+        $customer = CustomerQuery::create()
+            ->filterByRef("SHOPPING_FEED")
+            ->findOne();
+
+        if (null !== $customer) {
+            return $customer;
+        }
+
+        $lang = LangQuery::create()
+            ->filterByByDefault(true)
+            ->findOne();
+
+        $customerTitle = CustomerTitleQuery::create()
+            ->filterByByDefault(true)
+            ->findOne();
+
+        $customer = (new Customer())
+            ->setLangId($lang->getId())
+            ->setTitleId($customerTitle->getId())
+            ->setRef("SHOPPING_FEED");
+
+        $customer->save();
+
+        return $customer;
+    }
 }
