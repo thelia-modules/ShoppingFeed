@@ -3,29 +3,49 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="../../../../vendor/thelia/propel/resources/xsd/database.xsd" >
 
-    <table name="shopping_feed_config" namespace="ShoppingFeed\Model">
+    <table name="shoppingfeed_feed" namespace="ShoppingFeed\Model">
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
         <column name="store_id" type="VARCHAR" />
         <column name="country_id" type="INTEGER" />
         <column name="lang_id" type="INTEGER" />
         <column name="api_token" type="VARCHAR" />
-        <foreign-key foreignTable="country" name="fk_shopping_feed_config_country_id" onDelete="CASCADE" onUpdate="RESTRICT">
+        <foreign-key foreignTable="country" name="fk_shoppingfeed_feed_country_id" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference foreign="id" local="country_id" />
         </foreign-key>
-        <foreign-key foreignTable="lang" name="fk_shopping_feed_config_lang_id" onDelete="CASCADE" onUpdate="RESTRICT">
+        <foreign-key foreignTable="lang" name="fk_shoppingfeed_feed_lang_id" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference foreign="id" local="lang_id" />
         </foreign-key>
         <behavior name="timestampable" />
     </table>
 
-    <table name="shopping_feed_order_data" namespace="ShoppingFeed\Model">
+    <table name="shoppingfeed_order_data" namespace="ShoppingFeed\Model">
         <column name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="feed_id" type="INTEGER" required="true" />
         <column name="channel" type="VARCHAR" />
         <column name="external_reference" type="VARCHAR" />
         <column name="email" type="VARCHAR" />
-        <foreign-key foreignTable="order" name="shopping_feed_order_data_id" onDelete="CASCADE" onUpdate="RESTRICT">
+        <foreign-key foreignTable="order" name="shoppingfeed_order_data_id" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference foreign="id" local="id" />
         </foreign-key>
+        <foreign-key foreignTable="shoppingfeed_feed" name="shoppingfeed_order_data_feed_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="feed_id" />
+        </foreign-key>
+    </table>
+
+    <table name="shoppingfeed_log"  namespace="ShoppingFeed\Model">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="feed_id" type="INTEGER" required="true" />
+        <column name="separation" type="BOOLEAN" required="true" />
+        <column name="level" type="INTEGER" required="true" />
+        <column name="object_id" type="INTEGER" />
+        <column name="object_type" type="VARCHAR" />
+        <column name="object_ref" type="VARCHAR" />
+        <column name="message" type="LONGVARCHAR" required="true" />
+        <column name="help" type="LONGVARCHAR" />
+        <foreign-key foreignTable="shoppingfeed_feed" name="shoppingfeed_log_feed_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="feed_id" />
+        </foreign-key>
+        <behavior name="timestampable" />
     </table>
 
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />

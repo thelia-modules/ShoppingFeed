@@ -1,0 +1,30 @@
+<div class="row u-margin-top">
+    <div class="col-md-8">
+        <div class="form-group">
+            <label for="js-input-search">Search</label>
+            <input type="text" class="form-control js-refresh-table" data-default="" id="js-input-search" placeholder="Message or Channel">
+        </div>
+    </div>
+    <div class="col-md-4">
+        <span class="sf_checkbox_container" id="js-input-level">
+            <label class="checkbox-inline sf_checkbox_info"><input type="checkbox" class="js_checkbox_level_log js-refresh-table" data-level="1" checked>Info</label>
+            <label class="checkbox-inline sf_checkbox_success"><input type="checkbox" class="js_checkbox_level_log js-refresh-table" data-level="2" checked>Sucess</label>
+            <label class="checkbox-inline sf_checkbox_warning"><input type="checkbox" class="js_checkbox_level_log js-refresh-table" data-level="3" checked>Warning</label>
+            <label class="checkbox-inline sf_checkbox_error"><input type="checkbox" class="js_checkbox_level_log js-refresh-table" data-level="4" checked>Error</label>
+            <label class="checkbox-inline sf_checkbox_fatal"><input type="checkbox" class="js_checkbox_level_log js-refresh-table" data-level="5" checked>Fatal</label>
+        </span>
+    </div>
+    <div class="col-md-12">
+        <table id="logs-datatable" class="table table-striped table-bordered js-list">
+            <thead>
+            <tr>
+                {foreach from=$columnsDefinition item=definition}
+                    <td>
+                        {$definition.title}
+                    </td>
+                {/foreach}
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>

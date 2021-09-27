@@ -5,8 +5,7 @@
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
     <forms>
-        <form name="shoppingfeed_configuration_form" class="ShoppingFeed\Form\ConfigurationForm" />
-        <form name="shoppingfeed_feed_configuration_form" class="ShoppingFeed\Form\FeedConfigurationForm" />
+        <form name="shoppingfeed_feed_form" class="ShoppingFeed\Form\FeedForm" />
     </forms>
 
     <commands>
@@ -20,8 +19,20 @@
         </service>
         <service id="shopping_feed_api_service" class="ShoppingFeed\Service\ApiService">
         </service>
+        <service id="shopping_feed_log_service" class="ShoppingFeed\Service\LogService">
+        </service>
         <service id="shopping_feed_order_service" class="ShoppingFeed\Service\OrderService">
             <argument type="service" id="shopping_feed_api_service" />
+            <argument type="service" id="shopping_feed_log_service" />
         </service>
     </services>
+
+    <hooks>
+        <hook id="shoppingfeed.module.config.hook" class="ShoppingFeed\Hook\HookManager">
+            <tag name="hook.event_listener" type="backoffice" event="home.bottom" method="renderLogs"/>
+            <tag name="hook.event_listener" event="main.head-css" type="back" />
+            <argument type="service" id="shopping_feed_log_service" />
+            <tag name="hook.event_listener" event="home.js" type="back" method="renderJs" />
+        </hook>
+    </hooks>
 </config>

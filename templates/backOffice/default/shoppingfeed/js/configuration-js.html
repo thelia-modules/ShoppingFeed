@@ -1,0 +1,74 @@
+
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+        var ajaxUrl = "{url path="/admin/module/ShoppingFeed/logs/view"}";
+        var columns =  {$columnsDefinition|@json_encode nofilter};
+        $(document).ready(function() {
+            {literal}
+            var table = $('#logs-datatable').DataTable( {
+                serverSide: true,
+                processing: true,
+                searching: false,
+                lengthChange: false,
+                displayLength: 25,
+                order: [[ 0, "desc" ]],
+                ajax: {
+                    url: ajaxUrl,
+                    method: 'POST',
+                    data: function (data) {
+                        var levels = [];
+                        $('.js_checkbox_level_log:checked').each(function (checkbox) {
+                            levels.push(this.dataset.level);
+                        });
+                        data.filter = {
+                            levels: levels,
+                            search: $('#js-input-search').val(),
+                        };
+                    }
+                },
+                columnDefs: columns.concat([
+                    {
+                        className: "text-center",
+                        targets: [0,1,2,3],
+                        render: function ( data ) {
+                            return data;
+                        }
+                    },
+                    {
+                        className: "text-center",
+                        targets: 4,
+                        render: function ( data ) {
+                            if (data['help']) {
+                                return data['message'] + "<a href='#' data-toggle='tooltip' title='" + data['help'] + "'><span class='glyphicon glyphicon-question-sign'></span></a>";
+                            }
+                            return data['message'];
+                        }
+                    },
+                    {
+                        className: "text-center",
+                        targets: 5,
+                        render: function ( data ) {
+                            if (data['url']) {
+                                return '<a target="_blank" href="' + data['url'] + '">' + data['content'] + '</a>'
+                            }
+                            return data['content'];
+                        }
+                    },
+
+                ]),
+                createdRow: function( row, data){
+                    $(row).addClass('level-' + data[3]);
+                },
+                drawCallback: function() {
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            });
+
+            $('.js-refresh-table').on('change keyup', function () {
+                table.ajax.reload();
+            });
+            {/literal}
+        } );
+    </script>

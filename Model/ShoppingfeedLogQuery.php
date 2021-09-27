@@ -2,10 +2,10 @@
 
 namespace ShoppingFeed\Model;
 
-use ShoppingFeed\Model\Base\ShoppingFeedConfigQuery as BaseShoppingFeedConfigQuery;
+use ShoppingFeed\Model\Base\ShoppingfeedLogQuery as BaseShoppingfeedLogQuery;
 
 /**
- * Skeleton subclass for performing query and update operations on the 'shopping_feed_config' table.
+ * Skeleton subclass for performing query and update operations on the 'shoppingfeed_log' table.
  *
  *
  *
@@ -14,7 +14,7 @@ use ShoppingFeed\Model\Base\ShoppingFeedConfigQuery as BaseShoppingFeedConfigQue
  * long as it does not already exist in the output directory.
  *
  */
-class ShoppingFeedConfigQuery extends BaseShoppingFeedConfigQuery
+class ShoppingfeedLogQuery extends BaseShoppingfeedLogQuery
 {
 
 }

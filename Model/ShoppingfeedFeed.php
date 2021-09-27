@@ -2,10 +2,10 @@
 
 namespace ShoppingFeed\Model;
 
-use ShoppingFeed\Model\Base\ShoppingFeedConfig as BaseShoppingFeedConfig;
+use ShoppingFeed\Model\Base\ShoppingfeedFeed as BaseShoppingfeedFeed;
 
 /**
- * Skeleton subclass for representing a row from the 'shopping_feed_config' table.
+ * Skeleton subclass for representing a row from the 'shoppingfeed_feed' table.
  *
  *
  *
@@ -14,7 +14,7 @@ use ShoppingFeed\Model\Base\ShoppingFeedConfig as BaseShoppingFeedConfig;
  * long as it does not already exist in the output directory.
  *
  */
-class ShoppingFeedConfig extends BaseShoppingFeedConfig
+class ShoppingfeedFeed extends BaseShoppingfeedFeed
 {
     public function getFeedFilePrefix()
     {

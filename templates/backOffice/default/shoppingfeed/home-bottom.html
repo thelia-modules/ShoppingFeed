@@ -1,0 +1,19 @@
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title row"><div class="col-md-10">{intl l='ShoppingFeed Logs' d='shoppingfeed.bo.default'}</div><div class="col-md-2 text-right"><a href="{url path='/admin/module/ShoppingFeed'}" class="btn btn-info">{intl l="See all logs" d='shoppingfeed.bo.default'}</a></div></div>
+    </div>
+
+    <div class="panel-body">
+        <table id="logs-datatable" class="table table-striped table-bordered js-list">
+            <thead>
+            <tr>
+                {foreach from=$columnsDefinition item=definition}
+                    <td>
+                        {$definition.title}
+                    </td>
+                {/foreach}
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>

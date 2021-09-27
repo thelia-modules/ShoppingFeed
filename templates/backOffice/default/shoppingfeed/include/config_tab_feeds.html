@@ -1,0 +1,144 @@
+{foreach from=$feeds item=feed}
+    {form name="shoppingfeed_feed_form"}
+        <form action="{url path="/admin/module/ShoppingFeed/feed"}/{$feed->getId()}" method="post">
+            {form_hidden_fields form=$form}
+
+            {if $form_error}
+                <div class="alert alert-danger">{$form_error_message}</div>
+            {/if}
+
+            {form_field form=$form field='success_url'}
+                <input type="hidden" name="{$name}" value="{url path={navigate to="current"}}"/>
+            {/form_field}
+
+            <div class="panel-body">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {form_field form=$form field='country_id'}
+                            <label for="{$name}">{$label}</label>
+                            <select id="{$name}" class="form-control" name="{$name}">
+                                {loop type="country" name="country"}
+                                    <option value="{$ID}" {if $feed->getCountryId() == $ID}selected{/if}>{$TITLE}</option>
+                                {/loop}
+                            </select>
+                            <small class="form-text text-muted">{intl l="This will define the tax to apply to products in feed"}</small>
+                        {/form_field}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {form_field form=$form field='lang_id'}
+                            <label for="{$name}">{$label}</label>
+                            <select id="{$name}" class="form-control" name="{$name}">
+                                {loop type="lang" name="lang"}
+                                    <option value="{$ID}" {if $feed->getLangId() == $ID}selected{/if}>{$TITLE}</option>
+                                {/loop}
+                            </select>
+                            <small class="form-text text-muted">{intl l="This will define the language of text (e.g 'product title') in feed"}</small>
+                        {/form_field}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {form_field form=$form field='store_id'}
+                            <label for="{$name}">{$label}</label>
+
+                            <input id="{$name}"  class="form-control" type="text" name="{$name}" value="{$feed->getStoreId()}"/>
+                            <small class="form-text text-muted">{intl l="The identifier of your store, can be found in ShoppingFeed back office"}</small>
+                        {/form_field}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {form_field form=$form field='api_token'}
+                            <label for="{$name}">{$label}</label>
+
+                            <input id="{$name}"  class="form-control" type="text" name="{$name}" value="{$feed->getApiToken()}"/>
+                            <small class="form-text text-muted">{intl l="The api token, can be found in ShoppingFeed back office"}</small>
+                        {/form_field}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        {$feedUrl = {url path=""}|cat:$feed->getFeedFilePrefix()|cat:"_shopping_feed.xml"|replace:'/index.php':''|replace:'/index_dev.php':''}
+                        {intl l="The url of your feed file is "} <a href="{$feedUrl}">{$feedUrl}</a>
+                    </div>
+                </div>
+                <br>
+                <div class="col-md-9">
+                    <input type="submit" class="btn btn-info form-control" value="{intl l="Save"}">
+                </div>
+                <div class="col-md-3">
+                    <a  class="btn btn-danger form-control" href="{url path="/admin/module/ShoppingFeed/feed/delete"}/{$feed->getId()}">{intl l="Delete"}</a>
+                </div>
+            </div>
+        </form>
+    {/form}
+    <hr>
+{/foreach}
+{form name="shoppingfeed_feed_form"}
+    <form action="{url path="/admin/module/ShoppingFeed/feed"}" method="post">
+        {form_hidden_fields form=$form}
+
+        {if $form_error}
+            <div class="alert alert-danger">{$form_error_message}</div>
+        {/if}
+
+        {form_field form=$form field='success_url'}
+            <input type="hidden" name="{$name}" value="{url path={navigate to="current"}}"/>
+        {/form_field}
+
+        <div class="panel-body">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {form_field form=$form field='country_id'}
+                        <label for="{$name}">{$label}</label>
+                        <select id="{$name}" class="form-control" name="{$name}">
+                            {loop type="country" name="country"}
+                                <option value="{$ID}" {if {$value} == $ID || (empty($value) && $IS_DEFAULT)}selected{/if}>{$TITLE}</option>
+                            {/loop}
+                        </select>
+                        <small class="form-text text-muted">{intl l="This will define the tax to apply to products in feed"}</small>
+                    {/form_field}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {form_field form=$form field='lang_id'}
+                        <label for="{$name}">{$label}</label>
+                        <select id="{$name}" class="form-control" name="{$name}">
+                            {loop type="lang" name="lang"}
+                                <option value="{$ID}" {if {$value} == $ID || (empty($value) && $IS_DEFAULT)}selected{/if}>{$TITLE}</option>
+                            {/loop}
+                        </select>
+                        <small class="form-text text-muted">{intl l="This will define the language of text (e.g 'product title') in feed"}</small>
+                    {/form_field}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {form_field form=$form field='store_id'}
+                        <label for="{$name}">{$label}</label>
+
+                        <input id="{$name}"  class="form-control" type="text" name="{$name}" value="{$value}"/>
+                        <small class="form-text text-muted">{intl l="The identifier of your store, can be found in ShoppingFeed back office"}</small>
+                    {/form_field}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {form_field form=$form field='api_token'}
+                        <label for="{$name}">{$label}</label>
+
+                        <input id="{$name}"  class="form-control" type="text" name="{$name}" value="{$value}"/>
+                        <small class="form-text text-muted">{intl l="The api token, can be found in ShoppingFeed back office"}</small>
+                    {/form_field}
+                </div>
+            </div>
+            <br>
+            <div class="col-md-12">
+                <input type="submit" class="btn btn-success form-control" value="{intl l="Create"}">
+            </div>
+        </div>
+    </form>
+{/form}

@@ -1,0 +1,63 @@
+
+.js-list {
+    width: 100% !important;
+}
+.level-Warning td {
+    color: #856404;
+    background-color: #fff3cd!important;
+}
+.level-Success td  {
+    color: #155724;
+    background-color: #d4edda!important;
+}
+.level-Error td {
+    color: #721c24;
+    background-color: #f8d7da!important;
+}
+.level-Fatal td {
+    color: #1b1e21;
+    background-color: #d6d8d9!important;
+}
+
+.sf_checkbox_info {
+    border: 1px solid lightgray;
+}
+.sf_checkbox_success {
+    color: #155724;
+    background-color: #d4edda!important;
+}
+.sf_checkbox_warning {
+    color: #856404;
+    background-color: #fff3cd!important;
+}
+.sf_checkbox_error {
+    color: #721c24;
+    background-color: #f8d7da!important;
+}
+.sf_checkbox_fatal {
+    color: #1b1e21;
+    background-color: #d6d8d9!important;
+}
+.sf_checkbox_container {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    margin-top: 28px;
+}
+.sf_checkbox_container .checkbox-inline {
+    width: 100%;
+    height: 22px;
+    padding-left: 24px;
+    border-radius: 5px;
+}
+.sf_checkbox_container .checkbox-inline input {
+    width: fit-content;
+}
+.tooltip-inner {
+    max-width: 500px;
+    padding: 15px 10px;
+}
+
+.dataTables_scrollBody {
+    overflow: visible !important;
+}

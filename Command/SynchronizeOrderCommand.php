@@ -2,7 +2,7 @@
 
 namespace ShoppingFeed\Command;
 
-use ShoppingFeed\Model\ShoppingFeedConfigQuery;
+use ShoppingFeed\Model\ShoppingfeedFeedQuery;
 use ShoppingFeed\Service\FeedService;
 use ShoppingFeed\Service\OrderService;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,10 +23,10 @@ class SynchronizeOrderCommand extends ContainerAwareCommand
         /** @var OrderService $orderService */
         $orderService = $this->getContainer()->get("shopping_feed_order_service");
 
-        $configs = ShoppingFeedConfigQuery::create()->find();
+        $feeds = ShoppingfeedFeedQuery::create()->find();
 
-        foreach ($configs as $config) {
-            $orderService->importOrders($config);
+        foreach ($feeds as $feed) {
+            $orderService->importOrders($feed);
         }
 
         return 1;

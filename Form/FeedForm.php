@@ -10,7 +10,7 @@ use Thelia\Form\BaseForm;
 use Thelia\Model\CountryQuery;
 
 
-class FeedConfigurationForm extends BaseForm
+class FeedForm extends BaseForm
 {
     protected function buildForm()
     {
@@ -52,6 +52,6 @@ class FeedConfigurationForm extends BaseForm
 
     public function getName()
     {
-        return "shoppingfeed_feed_configuration_form";
+        return "shoppingfeed_feed_form";
     }
 }

@@ -3,7 +3,7 @@
 namespace ShoppingFeed\Service;
 
 use ShoppingFeed\Adapter\Guzzle7Adapter;
-use ShoppingFeed\Model\ShoppingFeedConfig;
+use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Sdk\Client\Client;
 use ShoppingFeed\Sdk\Client\ClientOptions;
 use ShoppingFeed\Sdk\Credential\Token;
@@ -12,7 +12,7 @@ use Thelia\Core\Thelia;
 
 class ApiService
 {
-    public function getFeedStore(ShoppingFeedConfig $feedConfig)
+    public function getFeedStore(ShoppingfeedFeed $feed)
     {
         $customerAdapter = new Guzzle7Adapter();
         $options = new ClientOptions();
@@ -20,17 +20,17 @@ class ApiService
         $options->setHandleRateLimit(false);
         $options->setPlatform('Thelia', Thelia::THELIA_VERSION);
 
-        $credential = new Token($feedConfig->getApiToken());
+        $credential = new Token($feed->getApiToken());
         $session = Client::createSession($credential, $options);
-        return $session->selectStore((int)$feedConfig->getStoreId());
+        return $session->selectStore((int)$feed->getStoreId());
     }
 
-    public function request(ShoppingFeedConfig $feedConfig, $route, $body = [], $method = "GET", $options = [])
+    public function request(ShoppingfeedFeed $feed, $route, $body = [], $method = "GET", $options = [])
     {
         $client = new Client([
             'base_uri' => 'https://api.shopping-feed.com',
             'headers' => [
-                'Authorization' => 'Bearer '.$feedConfig->getApiToken(),
+                'Authorization' => 'Bearer '.$feed->getApiToken(),
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ]
@@ -40,7 +40,7 @@ class ApiService
             $options['body'] = $body;
         }
 
-        $route = str_replace("{storeId}", $feedConfig->getStoreId(), $route);
+        $route = str_replace("{storeId}", $feed->getStoreId(), $route);
 
         return json_decode($client->request($method, $route, $options)->getBody());
     }

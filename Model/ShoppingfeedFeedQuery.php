@@ -2,10 +2,10 @@
 
 namespace ShoppingFeed\Model;
 
-use ShoppingFeed\Model\Base\ShoppingFeedOrderData as BaseShoppingFeedOrderData;
+use ShoppingFeed\Model\Base\ShoppingfeedFeedQuery as BaseShoppingfeedFeedQuery;
 
 /**
- * Skeleton subclass for representing a row from the 'shopping_feed_order_data' table.
+ * Skeleton subclass for performing query and update operations on the 'shoppingfeed_feed' table.
  *
  *
  *
@@ -14,7 +14,7 @@ use ShoppingFeed\Model\Base\ShoppingFeedOrderData as BaseShoppingFeedOrderData;
  * long as it does not already exist in the output directory.
  *
  */
-class ShoppingFeedOrderData extends BaseShoppingFeedOrderData
+class ShoppingfeedFeedQuery extends BaseShoppingfeedFeedQuery
 {
 
 }

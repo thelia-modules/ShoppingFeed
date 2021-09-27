@@ -9,19 +9,19 @@
         <default key="_controller">ShoppingFeed\Controller\ConfigurationController::viewAction</default>
     </route>
 
-    <route id="TEST" path="/admin/module/ShoppingFeed/test">
-        <default key="_controller">ShoppingFeed\Controller\ConfigurationController::testAction</default>
+    <route id="ShoppingFeed.feed.configuration.create" path="/admin/module/ShoppingFeed/feed" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\FeedController::createAction</default>
     </route>
 
-    <route id="ShoppingFeed.feed.configuration.create" path="/admin/module/ShoppingFeed/config" methods="post">
-        <default key="_controller">ShoppingFeed\Controller\FeedConfigurationController::createAction</default>
+    <route id="ShoppingFeed.feed.configuration.update" path="/admin/module/ShoppingFeed/feed/{feedId}" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\FeedController::updateAction</default>
     </route>
 
-    <route id="ShoppingFeed.feed.configuration.update" path="/admin/module/ShoppingFeed/config/{configId}" methods="post">
-        <default key="_controller">ShoppingFeed\Controller\FeedConfigurationController::updateAction</default>
+    <route id="ShoppingFeed.feed.configuration.delete" path="/admin/module/ShoppingFeed/feed/delete/{feedId}">
+        <default key="_controller">ShoppingFeed\Controller\FeedController::deleteAction</default>
     </route>
 
-    <route id="ShoppingFeed.feed.configuration.delete" path="/admin/module/ShoppingFeed/config/delete/{configId}">
-        <default key="_controller">ShoppingFeed\Controller\FeedConfigurationController::deleteAction</default>
+    <route id="ShoppingFeed.feed.logs.view" path="/admin/module/ShoppingFeed/logs/view">
+        <default key="_controller">ShoppingFeed\Controller\LogController::viewAction</default>
     </route>
 </routes>

@@ -2,7 +2,7 @@
 
 namespace ShoppingFeed\Command;
 
-use ShoppingFeed\Model\ShoppingFeedConfigQuery;
+use ShoppingFeed\Model\ShoppingfeedFeedQuery;
 use ShoppingFeed\Service\FeedService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,10 +23,10 @@ class GenerateFeedCommand extends ContainerAwareCommand
         /** @var FeedService $feedService */
         $feedService = $this->getContainer()->get("shopping_feed_feed_service");
 
-        $configs = ShoppingFeedConfigQuery::create()->find();
+        $feeds = ShoppingfeedFeedQuery::create()->find();
 
-        foreach ($configs as $config) {
-            $feedService->generateFeed($config->getFeedFilePrefix(), $config->getCountry(), $config->getLang());
+        foreach ($feeds as $feed) {
+            $feedService->generateFeed($feed->getFeedFilePrefix(), $feed->getCountry(), $feed->getLang());
         }
 
         return 1;
