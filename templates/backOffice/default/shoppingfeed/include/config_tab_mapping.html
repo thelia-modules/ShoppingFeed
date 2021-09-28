@@ -51,6 +51,40 @@
                 </form>
             {/form}
         {/foreach}
+        {foreach $missingMappings as $missingMapping}
+            {form name="shoppingfeed_mapping_delivery_form"}
+                <form action="{url path="/admin/module/ShoppingFeed/mapping"}" method="post">
+                    {form_hidden_fields form=$form}
+
+                    {form_field form=$form field='success_url'}
+                        <input type="hidden" name="{$name}" value="{url path="/admin/module/ShoppingFeed?current_tab=mapping"}"/>
+                    {/form_field}
+                    <tr class="level-Warning">
+                        <td class="col-md-5">
+                            {form_field form=$form field='code'}
+                                <input id="{$name}"  class="form-control" type="text" name="{$name}" value="{$missingMapping}"/>
+                            {/form_field}
+                        </td>
+                        <td class="col-md-6">
+                            {form_field form=$form field="module_id"}
+                                <div class="form-group">
+                                    <label for="{$name}"></label>
+                                    <select class="form-control" name="{$name}" id="{$label_attr.for}">
+                                        <option value="">{intl l="-- Select a delivery module --"}</option>
+                                        {foreach $choices as $module}
+                                            <option value="{$module->value}">{$module->label}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            {/form_field}
+                        </td>
+                        <td class="col-md-1">
+                            <input type="submit" class="btn btn-success form-control" value="{intl l="Create"}">
+                        </td>
+                    </tr>
+                </form>
+            {/form}
+        {/foreach}
         {form name="shoppingfeed_mapping_delivery_form"}
             <form action="{url path="/admin/module/ShoppingFeed/mapping"}" method="post">
                 {form_hidden_fields form=$form}

@@ -41,7 +41,7 @@ class ShoppingfeedException extends \Exception
     /**
      * @return int
      */
-    public function getObjectId(): int
+    public function getObjectId():? int
     {
         return $this->objectId;
     }
@@ -50,7 +50,7 @@ class ShoppingfeedException extends \Exception
      * @param int $objectId
      * @return ShoppingfeedException
      */
-    public function setObjectId(int $objectId): ShoppingfeedException
+    public function setObjectId(int $objectId = null): ShoppingfeedException
     {
         $this->objectId = $objectId;
         return $this;
@@ -59,7 +59,7 @@ class ShoppingfeedException extends \Exception
     /**
      * @return string
      */
-    public function getObjectType(): string
+    public function getObjectType():? string
     {
         return $this->objectType;
     }
@@ -68,7 +68,7 @@ class ShoppingfeedException extends \Exception
      * @param string $objectType
      * @return ShoppingfeedException
      */
-    public function setObjectType(string $objectType): ShoppingfeedException
+    public function setObjectType(string $objectType = null): ShoppingfeedException
     {
         $this->objectType = $objectType;
         return $this;
@@ -77,7 +77,7 @@ class ShoppingfeedException extends \Exception
     /**
      * @return string
      */
-    public function getObjectRef(): string
+    public function getObjectRef():? string
     {
         return $this->objectRef;
     }
@@ -86,7 +86,7 @@ class ShoppingfeedException extends \Exception
      * @param string $objectRef
      * @return ShoppingfeedException
      */
-    public function setObjectRef(string $objectRef): ShoppingfeedException
+    public function setObjectRef(string $objectRef = null): ShoppingfeedException
     {
         $this->objectRef = $objectRef;
         return $this;

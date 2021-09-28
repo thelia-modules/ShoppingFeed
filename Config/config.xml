@@ -22,9 +22,12 @@
         </service>
         <service id="shopping_feed_log_service" class="ShoppingFeed\Service\LogService">
         </service>
+        <service id="shopping_feed_mapping_delivery_service" class="ShoppingFeed\Service\MappingDeliveryService">
+        </service>
         <service id="shopping_feed_order_service" class="ShoppingFeed\Service\OrderService">
             <argument type="service" id="shopping_feed_api_service" />
             <argument type="service" id="shopping_feed_log_service" />
+            <argument type="service" id="shopping_feed_mapping_delivery_service" />
         </service>
     </services>
 

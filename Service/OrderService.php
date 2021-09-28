@@ -5,6 +5,7 @@ namespace ShoppingFeed\Service;
 use Propel\Runtime\Propel;
 use ShoppingFeed\Exception\ShoppingfeedException;
 use ShoppingFeed\Model\ShoppingfeedFeed;
+use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
 use ShoppingFeed\Model\ShoppingFeedOrderData;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\ShoppingFeed;
@@ -28,11 +29,13 @@ class OrderService
 {
     protected $apiService;
     protected $logger;
+    protected $mappingDeliveryService;
 
-    public function __construct(ApiService $apiService, LogService $logger)
+    public function __construct(ApiService $apiService, LogService $logger, MappingDeliveryService $mappingDeliveryService)
     {
         $this->apiService = $apiService;
         $this->logger = $logger;
+        $this->mappingDeliveryService = $mappingDeliveryService;
     }
 
     public function importOrders(ShoppingfeedFeed $feed)
@@ -84,6 +87,27 @@ class OrderService
                     ->filterByCode($order->getPaymentInformation()['currency'])
                     ->findOne();
 
+                $deliveryModuleId = $this->mappingDeliveryService->getDeliveryModuleIdFromCode($order->getShipment()["carrier"]);
+                if ($deliveryModuleId === 0) {
+                    throw new ShoppingfeedException(
+                        $feed,
+                        Translator::getInstance()->trans(
+                            "This delivery code mapping does not exists.",
+                            [],
+                            ShoppingFeed::DOMAIN_NAME
+                        ),
+                        Translator::getInstance()->trans(
+                            "To create this mapping, go to Mapping Delivery tab (see link in extra)",
+                            [],
+                            ShoppingFeed::DOMAIN_NAME
+                        ),
+                        LogService::LEVEL_ERROR,
+                        null,
+                        'Mapping',
+                        $order->getShipment()["carrier"]
+                    );
+                }
+
                 $theliaOrder = (new Order())
                     ->setCustomer($customer)
                     ->setInvoiceOrderAddressId($theliaInvoiceAddress->getId())
@@ -91,7 +115,7 @@ class OrderService
                     ->setCurrencyId($currency->getId())
                     ->setPostage($order->getPaymentInformation()['shippingAmount'])
                     ->setPaymentModuleId(ShoppingFeed::getModuleId())
-                    ->setDeliveryModuleId(ShoppingFeed::getModuleId())
+                    ->setDeliveryModuleId($deliveryModuleId)
                     ->setStatusId($paidStatus->getId())
                     ->setLangId($feed->getLangId());
 

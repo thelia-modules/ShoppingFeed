@@ -67,6 +67,13 @@ class LogController extends BaseAdminController
                     $extra['content']= 'REF: '.$orderRef;
                 }
             }
+            if ($log->getObjectType() == 'Mapping') {
+                $code = $log->getObjectRef();
+                $extra['url'] = URL::getInstance()->absoluteUrl('admin/module/ShoppingFeed?current_tab=mapping');
+                if ($code) {
+                    $extra['content']= 'MAP: '.$code;
+                }
+            }
             $data[] = [
                 $log->getCreatedAt()->format("d-m-Y H:i:s"),
                 $log->getShoppingfeedFeed()->getCountry()->getIsoalpha2()." - ".$log->getShoppingfeedFeed()->getLang()->getTitle(),

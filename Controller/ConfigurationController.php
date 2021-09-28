@@ -3,6 +3,7 @@
 namespace ShoppingFeed\Controller;
 
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
+use ShoppingFeed\Model\ShoppingfeedLogQuery;
 use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\ModuleQuery;
@@ -16,21 +17,29 @@ class ConfigurationController extends BaseAdminController
             [
                 "feeds" => ShoppingfeedFeedQuery::create()->find(),
                 "mappings" => ShoppingfeedMappingDeliveryQuery::create()->find(),
+                "missingMappings" => $this->getMissingMappings(),
                 'columnsDefinition' => $this->getContainer()->get('shopping_feed_log_service')->defineColumnsDefinition(),
             ]
         );
     }
 
-    public function getDeliveryModules()
+    //shopping_feed_mapping_delivery_service
+
+    public function getMissingMappings()
     {
-        $deliveryModules = ModuleQuery::create()->filterByType(2)->filterByCategory("delivery")->find();
+        $missingMappings = ShoppingfeedLogQuery::create()
+            ->filterByObjectType('Mapping')
+            ->groupByObjectRef()
+            ->find();
 
         $results = [];
-
-        foreach ($deliveryModules as $deliveryModule) {
-            $results[$deliveryModule->getId()] = $deliveryModule->getTitle();
+        foreach ($missingMappings as $missingMapping) {
+            $mappingDeliveryService = $this->getContainer()->get('shopping_feed_mapping_delivery_service');
+            $deliveryModuleId = $mappingDeliveryService->getDeliveryModuleIdFromCode($missingMapping->getObjectRef());
+            if ($deliveryModuleId === 0) {
+                $results[] = $missingMapping->getObjectRef();
+            }
         }
-
         return $results;
     }
 

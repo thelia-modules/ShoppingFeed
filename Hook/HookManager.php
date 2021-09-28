@@ -33,7 +33,7 @@ class HookManager extends BaseHook
     public function renderJs(HookRenderEvent $event)
     {
         $event->add($this->render(
-            'shoppingfeed/home-js.html',
+            'shoppingfeed/js/home-js.html',
             [
                 'columnsDefinition' => $this->logService->defineColumnsDefinition(),
             ]

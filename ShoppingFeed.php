@@ -16,9 +16,11 @@ use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
 use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\LangQuery;
+use Thelia\Model\Order;
+use Thelia\Module\AbstractPaymentModule;
 use Thelia\Module\BaseModule;
 
-class ShoppingFeed extends BaseModule
+class ShoppingFeed extends AbstractPaymentModule
 {
     /** @var string */
     const DOMAIN_NAME = 'shoppingfeed';
@@ -56,5 +58,17 @@ class ShoppingFeed extends BaseModule
         $customer->save();
 
         return $customer;
+    }
+
+
+    public function pay(Order $order)
+    {}
+
+    public function isValidPayment()
+    {}
+
+    public function manageStockOnCreation()
+    {
+        return true;
     }
 }
