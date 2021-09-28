@@ -48,5 +48,11 @@
         <behavior name="timestampable" />
     </table>
 
+    <table name="shoppingfeed_mapping_delivery"  namespace="ShoppingFeed\Model">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="code" type="VARCHAR" />
+        <column name="module_id" type="INTEGER" />
+    </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>

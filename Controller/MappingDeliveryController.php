@@ -5,6 +5,7 @@ namespace ShoppingFeed\Controller;
 use Propel\Runtime\Map\TableMap;
 use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
+use ShoppingFeed\Model\ShoppingfeedMappingDelivery;
 use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
 use ShoppingFeed\Service\LogService;
 use ShoppingFeed\Service\OrderService;
@@ -17,7 +18,7 @@ use Thelia\Core\Translation\Translator;
 use Thelia\Tools\URL;
 
 
-class FeedController extends BaseAdminController
+class MappingDeliveryController extends BaseAdminController
 {
     public function createAction()
     {
@@ -25,18 +26,16 @@ class FeedController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm("shoppingfeed_feed_form");
+        $form = $this->createForm("shoppingfeed_mapping_delivery_form");
 
         try {
             $data = $this->validateForm($form)->getData();
 
-            $feed = (new ShoppingfeedFeed())
-                ->setCountryId($data['country_id'])
-                ->setLangId($data['lang_id'])
-                ->setStoreId($data['store_id'])
-                ->setApiToken($data['api_token']);
+            $mappingDelivery = (new ShoppingfeedMappingDelivery())
+                ->setCode($data['code'])
+                ->setModuleId($data['module_id']);
 
-            $feed->save();
+            $mappingDelivery->save();
         } catch (\Exception $e) {
             $this->setupFormErrorContext(
                 Translator::getInstance()->trans(
@@ -47,34 +46,32 @@ class FeedController extends BaseAdminController
                 $e->getMessage(),
                 $form
             );
-            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFeed?current_tab=feeds'));
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFeed?current_tab=mapping'));
         }
 
         return $this->generateSuccessRedirect($form);
     }
 
-    public function updateAction($feedId)
+    public function updateAction($mappingId)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ShoppingFeed::getModuleCode(), AccessManager::VIEW)) {
             return $response;
         }
 
-        $form = $this->createForm("shoppingfeed_feed_form");
+        $form = $this->createForm("shoppingfeed_mapping_delivery_form");
 
         try {
             $data = $this->validateForm($form)->getData();
 
-            $feed = ShoppingfeedFeedQuery::create()
-                ->filterById($feedId)
+            $mappingDelivery = ShoppingfeedMappingDeliveryQuery::create()
+                ->filterById($mappingId)
                 ->findOne();
 
-            $feed
-                ->setCountryId($data['country_id'])
-                ->setLangId($data['lang_id'])
-                ->setStoreId($data['store_id'])
-                ->setApiToken($data['api_token']);
+            $mappingDelivery
+                ->setCode($data['code'])
+                ->setModuleId($data['module_id']);
 
-            $feed->save();
+            $mappingDelivery->save();
         } catch (\Exception $e) {
             $this->setupFormErrorContext(
                 Translator::getInstance()->trans(
@@ -85,28 +82,28 @@ class FeedController extends BaseAdminController
                 $e->getMessage(),
                 $form
             );
-            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFeed?current_tab=feeds'));
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFeed?current_tab=mapping'));
         }
 
         return $this->generateSuccessRedirect($form);
     }
 
-    public function deleteAction($feedId)
+    public function deleteAction($mappingId)
     {
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ShoppingFeed::getModuleCode(), AccessManager::VIEW)) {
             return $response;
         }
 
         try {
-            $feed = ShoppingfeedFeedQuery::create()
-                ->filterById($feedId)
+            $mappingDelivery = ShoppingfeedMappingDeliveryQuery::create()
+                ->filterById($mappingId)
                 ->findOne();
 
-            $feed->delete();
+            $mappingDelivery->delete();
         } catch (\Exception $e) {
-            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFeed?current_tab=feeds'));
+            return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFeed?current_tab=mapping'));
         }
 
-        return new RedirectResponse(URL::getInstance()->absoluteUrl("/admin/module/ShoppingFeed?current_tab=feeds"));
+        return new RedirectResponse(URL::getInstance()->absoluteUrl("/admin/module/ShoppingFeed?current_tab=mapping"));
     }
 }

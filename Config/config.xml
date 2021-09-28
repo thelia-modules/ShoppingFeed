@@ -6,6 +6,7 @@
 
     <forms>
         <form name="shoppingfeed_feed_form" class="ShoppingFeed\Form\FeedForm" />
+        <form name="shoppingfeed_mapping_delivery_form" class="ShoppingFeed\Form\MappingDeliveryForm" />
     </forms>
 
     <commands>
@@ -29,7 +30,7 @@
 
     <hooks>
         <hook id="shoppingfeed.module.config.hook" class="ShoppingFeed\Hook\HookManager">
-            <tag name="hook.event_listener" type="backoffice" event="home.bottom" method="renderLogs"/>
+            <tag name="hook.event_listener" type="backoffice" event="hook_home_stats" method="renderLogs"/>
             <tag name="hook.event_listener" event="main.head-css" type="back" />
             <argument type="service" id="shopping_feed_log_service" />
             <tag name="hook.event_listener" event="home.js" type="back" method="renderJs" />

@@ -88,5 +88,19 @@ CREATE TABLE `shoppingfeed_log`
         ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- shoppingfeed_mapping_delivery
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `shoppingfeed_mapping_delivery`;
+
+CREATE TABLE `shoppingfeed_mapping_delivery`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `code` VARCHAR(255),
+    `module_id` INTEGER,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

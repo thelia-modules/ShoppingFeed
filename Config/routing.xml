@@ -21,6 +21,18 @@
         <default key="_controller">ShoppingFeed\Controller\FeedController::deleteAction</default>
     </route>
 
+    <route id="ShoppingFeed.mapping.delivery.create" path="/admin/module/ShoppingFeed/mapping" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\MappingDeliveryController::createAction</default>
+    </route>
+
+    <route id="ShoppingFeed.mapping.delivery.update" path="/admin/module/ShoppingFeed/mapping/{mappingId}" methods="post">
+        <default key="_controller">ShoppingFeed\Controller\MappingDeliveryController::updateAction</default>
+    </route>
+
+    <route id="ShoppingFeed.mapping.delivery.delete" path="/admin/module/ShoppingFeed/mapping/delete/{mappingId}">
+        <default key="_controller">ShoppingFeed\Controller\MappingDeliveryController::deleteAction</default>
+    </route>
+
     <route id="ShoppingFeed.feed.logs.view" path="/admin/module/ShoppingFeed/logs/view">
         <default key="_controller">ShoppingFeed\Controller\LogController::viewAction</default>
     </route>
