@@ -2,6 +2,7 @@
 
 namespace ShoppingFeed\Hook;
 
+use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use ShoppingFeed\Service\LogService;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
@@ -23,7 +24,7 @@ class HookManager extends BaseHook
     public function renderLogs(HookRenderEvent $event)
     {
         $event->add($this->render(
-            'shoppingfeed/home-bottom.html',
+            'shoppingfeed/hook/home-bottom.html',
             [
                 'columnsDefinition' => $this->logService->defineColumnsDefinition(),
             ]
@@ -44,5 +45,18 @@ class HookManager extends BaseHook
     {
         $content = $this->addCSS('shoppingfeed/css/style.css');
         $event->add($content);
+    }
+
+    public function onPseMarketPlaceEdit(HookRenderEvent $event)
+    {
+        $marketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($event->getArgument('pse'))->findOne();
+        $event->add($this->render(
+            'shoppingfeed/hook/pse-edit-marketplace.html',
+            [
+                'pseId' => $event->getArgument('pse'),
+                'idx' => $event->getArgument('idx'),
+                'marketplace' => $marketplace->getMarketplace()
+            ]
+        ));
     }
 }

@@ -5,6 +5,7 @@ namespace ShoppingFeed\Service;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductGenerator;
+use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\Event\Image\ImageEvent;
 use Thelia\Core\Event\TheliaEvents;
@@ -81,6 +82,7 @@ class FeedService
             $productOut->setAdditionalImages($images);
 
             foreach ($productSaleElementss as $productSaleElements) {
+                $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
                 $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
 
                 $variation = $productOut->createVariation();
@@ -88,6 +90,10 @@ class FeedService
                     ->setReference($reference)
                     ->setPrice($productSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
                     ->setQuantity($productSaleElements->getQuantity());
+
+                if ($pseMarketplace) {
+                    $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
+                }
 
                 foreach ($productSaleElements->getAttributeCombinations() as $attributeCombination) {
                     $attribute = $attributeCombination->getAttribute()->setLocale($locale);

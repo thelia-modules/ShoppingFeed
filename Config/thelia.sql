@@ -102,5 +102,23 @@ CREATE TABLE `shoppingfeed_mapping_delivery`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- shoppingfeed_pse_marketplace
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `shoppingfeed_pse_marketplace`;
+
+CREATE TABLE `shoppingfeed_pse_marketplace`
+(
+    `pse_id` INTEGER NOT NULL,
+    `marketplace` VARCHAR(255),
+    PRIMARY KEY (`pse_id`),
+    CONSTRAINT `shoppingfeed_pse_marketplace_pse_id`
+        FOREIGN KEY (`pse_id`)
+        REFERENCES `product_sale_elements` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
