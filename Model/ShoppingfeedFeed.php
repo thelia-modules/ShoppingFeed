@@ -20,4 +20,10 @@ class ShoppingfeedFeed extends BaseShoppingfeedFeed
     {
         return $this->getCountryId()."_".$this->getLang()->getLocale();
     }
+
+    public function isDeletable()
+    {
+        $orders = ShoppingfeedOrderDataQuery::create()->filterByFeedId($this->getId())->find();
+        return ($orders === null);
+    }
 }

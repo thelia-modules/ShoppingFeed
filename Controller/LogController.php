@@ -70,8 +70,9 @@ class LogController extends BaseAdminController
             if ($log->getObjectType() == 'Mapping') {
                 $code = $log->getObjectRef();
                 $extra['url'] = URL::getInstance()->absoluteUrl('admin/module/ShoppingFeed?current_tab=mapping');
+                $extra['content'] = 'MAP ';
                 if ($code) {
-                    $extra['content']= 'MAP: '.$code;
+                    $extra['content'] .= $code;
                 }
             }
             $data[] = [

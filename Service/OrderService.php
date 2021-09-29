@@ -8,6 +8,7 @@ use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
 use ShoppingFeed\Model\ShoppingFeedOrderData;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
+use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 use ShoppingFeed\ShoppingFeed;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\CountryQuery;
@@ -43,6 +44,7 @@ class OrderService
         $orderApi = $this->apiService->getFeedStore($feed)->getOrderApi();
         $orders = $orderApi->getAll(['filters' => ['acknowledgment' => 'unacknowledged']]);
         $customer = ShoppingFeed::getSoppingFeedCustomer();
+        $orderOperation = new OrderOperation();
 
         $paidStatus = OrderStatusQuery::create()->findOneByCode(OrderStatus::CODE_PAID);
 
@@ -190,6 +192,7 @@ class OrderService
                     }
                 }
                 $con->commit();
+                $orderOperation->acknowledge($order->getReference(), $order->getChannel()->getName(), $theliaOrder->getRef());
             } catch (ShoppingfeedException $shoppingfeedException) {
                 $con->rollBack();
                 $this->logger->logShoppingfeedException($shoppingfeedException);
@@ -204,8 +207,8 @@ class OrderService
                     $order->getReference()
                 );
             }
-
         }
+        $orderApi->execute($orderOperation);
     }
 
     protected function createAddressFromData($data)

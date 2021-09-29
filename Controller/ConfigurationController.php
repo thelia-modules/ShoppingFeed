@@ -5,6 +5,7 @@ namespace ShoppingFeed\Controller;
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
 use ShoppingFeed\Model\ShoppingfeedLogQuery;
 use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
+use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\ModuleQuery;
 
@@ -22,8 +23,6 @@ class ConfigurationController extends BaseAdminController
             ]
         );
     }
-
-    //shopping_feed_mapping_delivery_service
 
     public function getMissingMappings()
     {

@@ -61,7 +61,7 @@
                     <input type="submit" class="btn btn-info form-control" value="{intl l="Save"}">
                 </div>
                 <div class="col-md-3">
-                    <a  class="btn btn-danger form-control" href="{url path="/admin/module/ShoppingFeed/feed/delete"}/{$feed->getId()}">{intl l="Delete"}</a>
+                    <a class="btn btn-danger {if !$feed->isDeletable()}disabled{/if} form-control" href="{url path="/admin/module/ShoppingFeed/feed/delete"}/{$feed->getId()}">{intl l="Delete"}</a>
                 </div>
             </div>
         </form>
