@@ -75,6 +75,12 @@ class LogController extends BaseAdminController
                     $extra['content'] .= $code;
                 }
             }
+            // For PSE ObjectRef is the product ID
+            if ($log->getObjectType() == 'PSE') {
+                $productId = $log->getObjectRef();
+                $extra['url'] = URL::getInstance()->absoluteUrl('admin/products/update?product_id='.$productId.'&current_tab=prices');
+                $extra['content'] = 'PSE : '.$log->getObjectId();
+            }
             $data[] = [
                 $log->getCreatedAt()->format("d-m-Y H:i:s"),
                 $log->getShoppingfeedFeed()->getCountry()->getIsoalpha2()." - ".$log->getShoppingfeedFeed()->getLang()->getTitle(),

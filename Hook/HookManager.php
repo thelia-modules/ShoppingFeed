@@ -2,10 +2,12 @@
 
 namespace ShoppingFeed\Hook;
 
+use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use ShoppingFeed\Service\LogService;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Model\OrderQuery;
 
 /**
  * Class HookManager
@@ -61,11 +63,17 @@ class HookManager extends BaseHook
 
     public function onOrderEdit(HookRenderEvent $event)
     {
+        $orderId = $event->getArgument("order_id");
+        $order = OrderQuery::create()->filterById($orderId)->findOne();
+        $orderData = ShoppingfeedOrderDataQuery::create()->filterById($orderId)->findOne();
+
         $event->add($this->render(
             'shoppingfeed/hook/order-edit.html',
             [
-                'channel' => 'Amazon',
-                'external_ref' => 'TEST-61556a5c99d28'
+                'is_ShoppingFeed_order' => ($orderData),
+                'channel' => ($orderData) ? $orderData->getChannel() : '',
+                'external_ref' => ($orderData) ? $orderData->getExternalReference() : '',
+                'created_at' => ($orderData) ? $order->getCreatedAt()->format("d/m/Y à H:i:s") : ''
             ]
         ));
     }

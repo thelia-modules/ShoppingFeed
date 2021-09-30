@@ -16,7 +16,7 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\OrderStatus;
 
-class OrderStatusListener implements EventSubscriberInterface
+class OrderStatusUpdateListener implements EventSubscriberInterface
 {
     /** @var ApiService  */
     protected $apiService;
@@ -41,12 +41,12 @@ class OrderStatusListener implements EventSubscriberInterface
     {
         $order = $event->getOrder();
         $orderData = ShoppingfeedOrderDataQuery::create()->filterById($order->getId())->findOne();
-        $feed = ShoppingfeedFeedQuery::create()->filterById($orderData->getFeedId())->findOne();
 
         if ($orderData) {
             try {
                 $orderOperation = new OrderOperation();
                 $orderStatusCode = $order->getOrderStatus()->getCode();
+                $feed = ShoppingfeedFeedQuery::create()->filterById($orderData->getFeedId())->findOne();
                 if ($orderStatusCode === OrderStatus::CODE_CANCELED) {
                     $orderOperation->cancel($orderData->getExternalReference(), $orderData->getChannel());
                 }
@@ -79,9 +79,9 @@ class OrderStatusListener implements EventSubscriberInterface
                 $this->logger->logShoppingfeedException($shoppingfeedException);
             } catch (\Exception $exception) {
                 $this->logger->log(
-                    $feed,
                     $exception->getMessage(),
                     LogService::LEVEL_ERROR,
+                    (isset($feed)) ? $feed : null,
                     $order->getId(),
                     'Order'
                 );

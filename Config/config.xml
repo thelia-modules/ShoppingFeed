@@ -24,7 +24,12 @@
         </service>
         <service id="shopping_feed_mapping_delivery_service" class="ShoppingFeed\Service\MappingDeliveryService">
         </service>
-        <service id="shopping_feed_order_status_listener" class="ShoppingFeed\EventListener\OrderStatusListener">
+        <service id="shopping_feed_order_status_listener" class="ShoppingFeed\EventListener\OrderStatusUpdateListener">
+            <argument type="service" id="shopping_feed_api_service" />
+            <argument type="service" id="shopping_feed_log_service" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="shopping_feed_price_stock_update_listener" class="ShoppingFeed\EventListener\PriceAndStockUpdateListener">
             <argument type="service" id="shopping_feed_api_service" />
             <argument type="service" id="shopping_feed_log_service" />
             <tag name="kernel.event_subscriber"/>

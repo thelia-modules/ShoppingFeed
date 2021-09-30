@@ -1,3 +1,4 @@
+{if $is_ShoppingFeed_order}
 <div class="general-block-decorator">
     <div class="row">
         <div class="col-md-2">
@@ -5,8 +6,10 @@
         </div>
         <div class="col-md-10">
             <div class="title">
-            Commande importée {$external_ref} - {$channel}
+             {$external_ref} - {$channel}
             </div>
+            <p>Commande importée le {$created_at}</p>
         </div>
     </div>
 </div>
+{/if}

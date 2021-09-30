@@ -21,6 +21,7 @@ use Thelia\Model\OrderProductTax;
 use Thelia\Model\OrderStatus;
 use Thelia\Model\OrderStatusQuery;
 use Thelia\Model\ProductSaleElementsQuery;
+use Thelia\TaxEngine\Calculator;
 use Thelia\Tools\I18n;
 
 class OrderService
@@ -144,6 +145,17 @@ class OrderService
                     $product = $productSaleElements->getProduct();
                     $product->setLocale($feed->getLang()->getLocale());
 
+                    $taxRule = $product->getTaxRule();
+                    $taxCalculator = new Calculator();
+                    $taxCalculator->loadTaxRule($taxRule, $feed->getCountry(), $product);
+                    if ($item->getTaxAmount() === 0) {
+                        $untaxedPrice = $taxCalculator->getUntaxedPrice($item->getUnitPrice());
+                        $taxAmount = $taxCalculator->getTaxAmountFromTaxedPrice($item->getUnitPrice());
+                    } else {
+                        $untaxedPrice = $item->getUnitPrice() - $item->getTaxAmount();
+                        $taxAmount = $item->getTaxAmount();
+                    }
+
                     $orderProduct = (new OrderProduct())
                         ->setOrderId($theliaOrder->getId())
                         // Data from thelia product
@@ -156,14 +168,14 @@ class OrderService
                         ->setProductRef($item->getReference())
                         ->setProductSaleElementsRef($item->getReference())
                         ->setEanCode($item->getReference())
-                        ->setPrice($item->getUnitPrice());
+                        ->setPrice($untaxedPrice);
 
                     $orderProduct->save($con);
 
                     $orderProductTax = (new OrderProductTax())
                         ->setOrderProductId($orderProduct->getId())
                         ->setTitle("")
-                        ->setAmount($item->getTaxAmount());
+                        ->setAmount($taxAmount);
 
                     $orderProductTax->save($con);
 
