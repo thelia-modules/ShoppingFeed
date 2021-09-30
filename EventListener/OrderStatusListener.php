@@ -3,7 +3,6 @@
 namespace ShoppingFeed\EventListener;
 
 use ShoppingFeed\Exception\ShoppingfeedException;
-use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
 use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
@@ -35,12 +34,12 @@ class OrderStatusListener implements EventSubscriberInterface
     {
         $order = $event->getOrder();
         $orderData = ShoppingfeedOrderDataQuery::create()->filterById($order->getId())->findOne();
+        $feed = ShoppingfeedFeedQuery::create()->filterById($orderData->getFeedId())->findOne();
 
         if ($orderData) {
             try {
                 $orderOperation = new OrderOperation();
                 $orderStatusCode = $order->getOrderStatus()->getCode();
-                $feed = ShoppingfeedFeedQuery::create()->filterById($orderData->getFeedId())->findOne();
                 if ($orderStatusCode === OrderStatus::CODE_CANCELED) {
                     $orderOperation->cancel($orderData->getExternalReference(), $orderData->getChannel());
                 }
@@ -76,9 +75,8 @@ class OrderStatusListener implements EventSubscriberInterface
                     $feed,
                     $exception->getMessage(),
                     LogService::LEVEL_ERROR,
-                    null,
-                    'Order',
-                    $order->getReference()
+                    $order->getId(),
+                    'Order'
                 );
             }
         }

@@ -47,6 +47,7 @@ class OrderService
         $orderOperation = new OrderOperation();
 
         $paidStatus = OrderStatusQuery::create()->findOneByCode(OrderStatus::CODE_PAID);
+        $nbImportedOrder = 0;
 
         foreach ($orders as $order) {
             try {
@@ -193,6 +194,7 @@ class OrderService
                 }
                 $con->commit();
                 $orderOperation->acknowledge($order->getReference(), $order->getChannel()->getName(), $theliaOrder->getRef());
+                $nbImportedOrder++;
             } catch (ShoppingfeedException $shoppingfeedException) {
                 $con->rollBack();
                 $this->logger->logShoppingfeedException($shoppingfeedException);
@@ -209,6 +211,13 @@ class OrderService
             }
         }
         $orderApi->execute($orderOperation);
+        if ($nbImportedOrder > 0) {
+            $this->logger->log(
+                $feed,
+                $nbImportedOrder.' order(s) have been imported successfully.',
+                LogService::LEVEL_SUCCESS
+            );
+        }
     }
 
     protected function createAddressFromData($data)

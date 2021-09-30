@@ -53,6 +53,7 @@ class ShoppingFeed extends AbstractPaymentModule
         $customer = (new Customer())
             ->setLangId($lang->getId())
             ->setTitleId($customerTitle->getId())
+            ->setEmail('module-shoppingfeed@thelia.net')
             ->setRef("SHOPPING_FEED");
 
         $customer->save();
