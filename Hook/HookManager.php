@@ -59,4 +59,15 @@ class HookManager extends BaseHook
             ]
         ));
     }
+
+    public function onOrderEdit(HookRenderEvent $event)
+    {
+        $event->add($this->render(
+            'shoppingfeed/hook/order-edit.html',
+            [
+                'channel' => 'Amazon',
+                'external_ref' => 'TEST-61556a5c99d28'
+            ]
+        ));
+    }
 }
