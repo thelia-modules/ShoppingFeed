@@ -5,7 +5,6 @@ namespace ShoppingFeed\Service;
 use Propel\Runtime\Propel;
 use ShoppingFeed\Exception\ShoppingfeedException;
 use ShoppingFeed\Model\ShoppingfeedFeed;
-use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
 use ShoppingFeed\Model\ShoppingFeedOrderData;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
@@ -19,11 +18,9 @@ use Thelia\Model\OrderAddress;
 use Thelia\Model\OrderProduct;
 use Thelia\Model\OrderProductAttributeCombination;
 use Thelia\Model\OrderProductTax;
-use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderStatus;
 use Thelia\Model\OrderStatusQuery;
 use Thelia\Model\ProductSaleElementsQuery;
-use Thelia\Model\TaxRuleI18n;
 use Thelia\Tools\I18n;
 
 class OrderService
@@ -201,9 +198,9 @@ class OrderService
             } catch (\Exception $exception) {
                 $con->rollBack();
                 $this->logger->log(
-                    $feed,
                     $exception->getMessage(),
                     LogService::LEVEL_ERROR,
+                    $feed,
                     null,
                     'Order',
                     $order->getReference()
@@ -213,9 +210,9 @@ class OrderService
         $orderApi->execute($orderOperation);
         if ($nbImportedOrder > 0) {
             $this->logger->log(
-                $feed,
                 $nbImportedOrder.' order(s) have been imported successfully.',
-                LogService::LEVEL_SUCCESS
+                LogService::LEVEL_SUCCESS,
+                $feed
             );
         }
     }

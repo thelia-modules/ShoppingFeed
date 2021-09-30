@@ -30,6 +30,13 @@ class OrderStatusListener implements EventSubscriberInterface
         $this->logger = $logService;
     }
 
+    public static function getSubscribedEvents()
+    {
+        return [
+            TheliaEvents::ORDER_UPDATE_STATUS => ['onOrderUpdateStatus', 64]
+        ];
+    }
+
     public function onOrderUpdateStatus(OrderEvent $event)
     {
         $order = $event->getOrder();
@@ -80,12 +87,5 @@ class OrderStatusListener implements EventSubscriberInterface
                 );
             }
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            TheliaEvents::ORDER_UPDATE_STATUS => ['onOrderUpdateStatus', 64]
-        ];
     }
 }

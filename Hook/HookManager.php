@@ -6,7 +6,6 @@ use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use ShoppingFeed\Service\LogService;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
-use Thelia\Core\HttpFoundation\Request;
 
 /**
  * Class HookManager
@@ -55,7 +54,7 @@ class HookManager extends BaseHook
             [
                 'pseId' => $event->getArgument('pse'),
                 'idx' => $event->getArgument('idx'),
-                'marketplace' => $marketplace->getMarketplace()
+                'marketplace' => ($marketplace) ? $marketplace->getMarketplace() : ''
             ]
         ));
     }

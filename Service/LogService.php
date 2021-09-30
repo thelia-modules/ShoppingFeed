@@ -20,7 +20,7 @@ class LogService
     const LEVEL_ERROR = 4;
     const LEVEL_FATAL = 5;
 
-    public function log($feed, $message, $level = LogService::LEVEL_INFORMATION, $objectId = null, $objectType = null, $objectRef = null, $help = '', $separation = 0)
+    public function log($message, $level = LogService::LEVEL_INFORMATION, $feed = null, $objectId = null, $objectType = null, $objectRef = null, $help = '', $separation = 0)
     {
         $log = (new ShoppingfeedLog())
             ->setLevel($level)
@@ -38,9 +38,9 @@ class LogService
     public function logShoppingfeedException(ShoppingfeedException $exception)
     {
         $this->log(
-            $exception->getFeed(),
             $exception->getMessage(),
             $exception->getLevel(),
+            $exception->getFeed(),
             $exception->getObjectId(),
             $exception->getObjectType(),
             $exception->getObjectRef(),

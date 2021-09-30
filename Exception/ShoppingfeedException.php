@@ -27,7 +27,7 @@ class ShoppingfeedException extends \Exception
     /** @var string $objectRef */
     protected $objectRef;
 
-    public function __construct(ShoppingfeedFeed $feed, $message = "", $help = "", $level = LogService::LEVEL_INFORMATION, $objectId = null, $objectType = null, $objectRef = null, $code = 0, Throwable $previous = null)
+    public function __construct(ShoppingfeedFeed $feed = null, $message = "", $help = "", $level = LogService::LEVEL_INFORMATION, $objectId = null, $objectType = null, $objectRef = null, $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->setFeed($feed);
@@ -95,7 +95,7 @@ class ShoppingfeedException extends \Exception
     /**
      * @return ShoppingfeedFeed
      */
-    public function getFeed(): ShoppingfeedFeed
+    public function getFeed():? ShoppingfeedFeed
     {
         return $this->feed;
     }
@@ -104,7 +104,7 @@ class ShoppingfeedException extends \Exception
      * @param ShoppingfeedFeed $feed
      * @return ShoppingfeedException
      */
-    public function setFeed(ShoppingfeedFeed $feed): ShoppingfeedException
+    public function setFeed(ShoppingfeedFeed $feed = null): ShoppingfeedException
     {
         $this->feed = $feed;
         return $this;

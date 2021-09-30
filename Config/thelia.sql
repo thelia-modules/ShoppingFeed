@@ -69,8 +69,8 @@ DROP TABLE IF EXISTS `shoppingfeed_log`;
 CREATE TABLE `shoppingfeed_log`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `feed_id` INTEGER NOT NULL,
-    `separation` TINYINT(1) NOT NULL,
+    `feed_id` INTEGER,
+    `separation` TINYINT(1),
     `level` INTEGER NOT NULL,
     `object_id` INTEGER,
     `object_type` VARCHAR(255),
