@@ -1,6 +1,6 @@
 <?php
 
-namespace ShoppingFeed\FormExtend;
+namespace ShoppingFeed\EventListener\FormExtend;
 
 use CustomerFamily\Model\ProductPurchasePrice;
 use CustomerFamily\Model\ProductPurchasePriceQuery;

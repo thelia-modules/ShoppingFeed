@@ -15,6 +15,7 @@
     </commands>
 
     <services>
+        <!-- Services -->
         <service id="shopping_feed_feed_service" class="ShoppingFeed\Service\FeedService">
             <argument type="service" id="event_dispatcher" />
         </service>
@@ -24,6 +25,13 @@
         </service>
         <service id="shopping_feed_mapping_delivery_service" class="ShoppingFeed\Service\MappingDeliveryService">
         </service>
+        <service id="shopping_feed_order_service" class="ShoppingFeed\Service\OrderService">
+            <argument type="service" id="shopping_feed_api_service" />
+            <argument type="service" id="shopping_feed_log_service" />
+            <argument type="service" id="shopping_feed_mapping_delivery_service" />
+        </service>
+
+        <!-- Event Listeners -->
         <service id="shopping_feed_order_status_listener" class="ShoppingFeed\EventListener\OrderStatusUpdateListener">
             <argument type="service" id="shopping_feed_api_service" />
             <argument type="service" id="shopping_feed_log_service" />
@@ -34,14 +42,14 @@
             <argument type="service" id="shopping_feed_log_service" />
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="shopping_feed_order_service" class="ShoppingFeed\Service\OrderService">
-            <argument type="service" id="shopping_feed_api_service" />
-            <argument type="service" id="shopping_feed_log_service" />
-            <argument type="service" id="shopping_feed_mapping_delivery_service" />
-        </service>
 
         <!-- Form Extend -->
-        <service id="shopping_feed_pse_form_extend" class="ShoppingFeed\FormExtend\ProductSaleElementsFormExtend">
+        <service id="shopping_feed_pse_form_extend" class="ShoppingFeed\EventListener\FormExtend\ProductSaleElementsFormExtend">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Loop Extend -->
+        <service id="shopping_feed_module_list_extend" class="ShoppingFeed\EventListener\LoopExtend\ModuleListLoopExtend">
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

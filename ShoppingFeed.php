@@ -12,6 +12,9 @@
 
 namespace ShoppingFeed;
 
+use Propel\Runtime\Connection\ConnectionInterface;
+use ShoppingFeed\Model\ShoppingfeedFeedQuery;
+use Thelia\Install\Database;
 use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
 use Thelia\Model\CustomerTitleQuery;
@@ -59,6 +62,24 @@ class ShoppingFeed extends AbstractPaymentModule
         $customer->save();
 
         return $customer;
+    }
+
+    /**
+     * @param ConnectionInterface|null $con
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function postActivation(ConnectionInterface $con = null)
+    {
+        // Once activated, create the module schema in the Thelia database.
+        $database = new Database($con);
+
+        try {
+            ShoppingfeedFeedQuery::create()->findOne();
+        } catch (\Exception $e) {
+            $database->insertSql(null, array(
+                __DIR__ . DS . 'Config' . DS . 'thelia.sql' // The module schema
+            ));
+        }
     }
 
 

@@ -62,11 +62,7 @@ class PriceAndStockUpdateListener implements EventSubscriberInterface
                 if ($editedItemCollection->count() === 0) {
                     throw new ShoppingfeedException(
                         $feed,
-                        Translator::getInstance()->trans(
-                            "This ref ".$pseRef." wasn't fount in ShoppingFeed catalog.",
-                            [],
-                            ShoppingFeed::DOMAIN_NAME
-                        ),
+                "This ref ".$pseRef." wasn't fount in ShoppingFeed catalog.",
                         Translator::getInstance()->trans(
                             "Maybe this pse isn't created in ShoppingFeed, regenerate feed to be sure.",
                             [],
@@ -89,11 +85,7 @@ class PriceAndStockUpdateListener implements EventSubscriberInterface
                 if ($editedItemCollection->count() === 0) {
                     throw new ShoppingfeedException(
                         $feed,
-                        Translator::getInstance()->trans(
-                            "This ref ".$pseRef." wasn't fount in ShoppingFeed inventory (during stock edition).",
-                            [],
-                            ShoppingFeed::DOMAIN_NAME
-                        ),
+                "This ref ".$pseRef." wasn't fount in ShoppingFeed inventory (during stock edition).",
                         Translator::getInstance()->trans(
                             "This ref was found for price edition but not for stock edition. Please contact ShoppingFeed.",
                             [],

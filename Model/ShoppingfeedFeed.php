@@ -24,6 +24,6 @@ class ShoppingfeedFeed extends BaseShoppingfeedFeed
     public function isDeletable()
     {
         $orders = ShoppingfeedOrderDataQuery::create()->filterByFeedId($this->getId())->find();
-        return ($orders === null);
+        return ($orders->count() === 0);
     }
 }
