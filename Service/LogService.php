@@ -24,7 +24,7 @@ class LogService
     {
         $log = (new ShoppingfeedLog())
             ->setLevel($level)
-            ->setFeedId($feed->getId())
+            ->setFeedId(($feed) ? $feed->getId() : null)
             ->setObjectId($objectId)
             ->setObjectType($objectType)
             ->setObjectRef($objectRef)

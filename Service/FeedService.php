@@ -5,11 +5,13 @@ namespace ShoppingFeed\Service;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductGenerator;
+use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\Event\Image\ImageEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Thelia;
+use Thelia\Model\Base\CategoryQuery;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\Lang;
@@ -21,17 +23,23 @@ use Thelia\Tools\URL;
 class FeedService
 {
     protected $eventDispatcher;
+    protected $logger;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, LogService $logger)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->logger = $logger;
     }
 
     /**
      * @return ProductFeedResult
      */
-    public function generateFeed($feedFilePrefix, Country $country, Lang $lang)
+    public function generateFeed(ShoppingfeedFeed $feed)
     {
+        $feedFilePrefix = $feed->getFeedFilePrefix();
+        $country = $feed->getCountry();
+        $lang = $feed->getLang();
+
         $generator = (new ProductGenerator())
             ->setPlatform("Thelia", Thelia::THELIA_VERSION);
 
@@ -81,6 +89,11 @@ class FeedService
 
             $productOut->setAdditionalImages($images);
 
+            $defaultCategory = CategoryQuery::create()->filterById($productIn->getDefaultCategoryId())->findOne();
+            if ($defaultCategory) {
+                $productOut->setCategory($defaultCategory->setLocale($locale)->getTitle());
+            }
+
             foreach ($productSaleElementss as $productSaleElements) {
                 $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
                 $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
@@ -108,6 +121,14 @@ class FeedService
 
         $generator->setUri('file://'.THELIA_WEB_DIR.$feedFilePrefix.'_shopping_feed.xml');
         $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCEPTION);
+
+
+        $this->logger->log(
+            'Catalog '.$country->getIsoalpha2().' generated with success.',
+            LogService::LEVEL_SUCCESS,
+            $feed
+        );
+
         return $generator->write($products);
     }
 

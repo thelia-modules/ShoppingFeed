@@ -18,6 +18,7 @@
         <!-- Services -->
         <service id="shopping_feed_feed_service" class="ShoppingFeed\Service\FeedService">
             <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="shopping_feed_log_service" />
         </service>
         <service id="shopping_feed_api_service" class="ShoppingFeed\Service\ApiService">
         </service>

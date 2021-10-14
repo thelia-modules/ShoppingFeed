@@ -26,7 +26,7 @@ class GenerateFeedCommand extends ContainerAwareCommand
         $feeds = ShoppingfeedFeedQuery::create()->find();
 
         foreach ($feeds as $feed) {
-            $feedService->generateFeed($feed->getFeedFilePrefix(), $feed->getCountry(), $feed->getLang());
+            $feedService->generateFeed($feed);
         }
 
         return 1;

@@ -83,7 +83,7 @@ class LogController extends BaseAdminController
             }
             $data[] = [
                 $log->getCreatedAt()->format("d-m-Y H:i:s"),
-                $log->getShoppingfeedFeed()->getCountry()->getIsoalpha2()." - ".$log->getShoppingfeedFeed()->getLang()->getTitle(),
+                ($log->getShoppingfeedFeed()) ? $log->getShoppingfeedFeed()->getCountry()->getIsoalpha2()." - ".$log->getShoppingfeedFeed()->getLang()->getTitle() : '-',
                 ($orderData) ? $orderData->getChannel() : '',
                 $log->getLevelText(),
                 [
