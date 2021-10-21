@@ -12,6 +12,7 @@ use Thelia\Core\Event\Image\ImageEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Thelia;
 use Thelia\Model\Base\CategoryQuery;
+use Thelia\Model\BrandQuery;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\Lang;
@@ -94,6 +95,11 @@ class FeedService
                 $productOut->setCategory($defaultCategory->setLocale($locale)->getTitle());
             }
 
+            $brand = $productIn->getBrand();
+            if ($brand) {
+                $productOut->setBrand($brand->setLocale($locale)->getTitle());
+            }
+
             foreach ($productSaleElementss as $productSaleElements) {
                 $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
                 $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
@@ -103,6 +109,8 @@ class FeedService
                     ->setReference($reference)
                     ->setPrice($productSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
                     ->setQuantity($productSaleElements->getQuantity());
+
+                $variation->setAttribute('weight', $productSaleElements->getWeight());
 
                 if ($pseMarketplace) {
                     $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());

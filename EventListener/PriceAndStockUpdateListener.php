@@ -60,19 +60,7 @@ class PriceAndStockUpdateListener implements EventSubscriberInterface
                 $editedItemCollection = $pricingApi->execute($pricingUpdate);
 
                 if ($editedItemCollection->count() === 0) {
-                    throw new ShoppingfeedException(
-                        $feed,
-                "This ref ".$pseRef." wasn't fount in ShoppingFeed catalog.",
-                        Translator::getInstance()->trans(
-                            "Maybe this pse isn't created in ShoppingFeed, regenerate feed to be sure.",
-                            [],
-                            ShoppingFeed::DOMAIN_NAME
-                        ),
-                        LogService::LEVEL_WARNING,
-                        $event->getProductSaleElementId(),
-                        'PSE',
-                        $product->getId()
-                    );
+                    continue;
                 }
 
                 $inventoryApi = $this->apiService->getFeedStore($feed)->getInventoryApi();
@@ -85,7 +73,7 @@ class PriceAndStockUpdateListener implements EventSubscriberInterface
                 if ($editedItemCollection->count() === 0) {
                     throw new ShoppingfeedException(
                         $feed,
-                "This ref ".$pseRef." wasn't fount in ShoppingFeed inventory (during stock edition).",
+                "This ref ".$pseRef." was not fount in ShoppingFeed inventory (during stock edition).",
                         Translator::getInstance()->trans(
                             "This ref was found for price edition but not for stock edition. Please contact ShoppingFeed.",
                             [],
