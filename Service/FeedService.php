@@ -111,6 +111,9 @@ class FeedService
                     ->setQuantity($productSaleElements->getQuantity());
 
                 $variation->setAttribute('weight', $productSaleElements->getWeight());
+                if ($productSaleElements->getEanCode()) {
+                    $variation->setAttribute('ean', $productSaleElements->getEanCode());
+                }
 
                 if ($pseMarketplace) {
                     $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
