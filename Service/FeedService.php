@@ -100,6 +100,12 @@ class FeedService
                 $productOut->setBrand($brand->setLocale($locale)->getTitle());
             }
 
+            foreach ($productIn->getFeatureProducts() as $featureProduct) {
+                $feature = $featureProduct->getFeature()->setLocale($locale);
+                $featureAv = $featureProduct->getFeatureAv()->setLocale($locale);
+                $productOut->setAttribute($feature->getTitle(), $featureAv->getTitle());
+            }
+
             foreach ($productSaleElementss as $productSaleElements) {
                 $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
                 $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
