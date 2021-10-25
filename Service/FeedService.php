@@ -2,6 +2,9 @@
 
 namespace ShoppingFeed\Service;
 
+use ShoppingFeed\Event\FeedProductExtraFieldEvent;
+use ShoppingFeed\Event\FeedPSEExtraFieldEvent;
+use ShoppingFeed\Event\ShoppingFeedEvents;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductGenerator;
@@ -12,10 +15,7 @@ use Thelia\Core\Event\Image\ImageEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Thelia;
 use Thelia\Model\Base\CategoryQuery;
-use Thelia\Model\BrandQuery;
 use Thelia\Model\ConfigQuery;
-use Thelia\Model\Country;
-use Thelia\Model\Lang;
 use Thelia\Model\Map\ProductPriceTableMap;
 use Thelia\Model\ProductQuery;
 use Thelia\Model\ProductSaleElementsQuery;
@@ -106,6 +106,8 @@ class FeedService
                 $productOut->setAttribute($feature->getTitle(), $featureAv->getTitle());
             }
 
+            $productOut->setAttribute("thelia_id", $productIn->getId());
+
             foreach ($productSaleElementss as $productSaleElements) {
                 $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
                 $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
@@ -130,7 +132,13 @@ class FeedService
                     $attributeAv = $attributeCombination->getAttributeAv()->setLocale($locale);
                     $variation->setAttribute($attribute->getTitle(), $attributeAv->getTitle());
                 }
+
+                $variation->setAttribute("thelia_id", $productSaleElements->getId());
             }
+
+            $extraFieldEvent = new FeedProductExtraFieldEvent();
+            $extraFieldEvent->setProduct($productOut);
+            $this->eventDispatcher->dispatch(ShoppingfeedEvents::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $extraFieldEvent);
         });
 
         $products = ProductQuery::create()
