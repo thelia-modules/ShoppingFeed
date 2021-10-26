@@ -134,11 +134,17 @@ class FeedService
                 }
 
                 $variation->setAttribute("thelia_id", $productSaleElements->getId());
+
+                $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
+                $pseExtraFieldEvent->setPse($productSaleElements);
+                $pseExtraFieldEvent->setVariation($variation);
+                $this->eventDispatcher->dispatch(ShoppingfeedEvents::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
             }
 
-            $extraFieldEvent = new FeedProductExtraFieldEvent();
-            $extraFieldEvent->setProduct($productOut);
-            $this->eventDispatcher->dispatch(ShoppingfeedEvents::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $extraFieldEvent);
+            $productExtraFieldEvent = new FeedProductExtraFieldEvent();
+            $productExtraFieldEvent->setProduct($productOut);
+            $productExtraFieldEvent->setProductModel($productIn);
+            $this->eventDispatcher->dispatch(ShoppingfeedEvents::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $productExtraFieldEvent);
         });
 
         $products = ProductQuery::create()

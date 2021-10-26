@@ -9,6 +9,7 @@ use Thelia\Core\Event\ActionEvent;
 class FeedProductExtraFieldEvent extends ActionEvent
 {
     protected $product;
+    protected $productModel;
 
     public function setProduct(Product $product)
     {
@@ -18,6 +19,16 @@ class FeedProductExtraFieldEvent extends ActionEvent
     public function getProduct()
     {
         return $this->product;
+    }
+
+    public function setProductModel(\Thelia\Model\Product $productModel)
+    {
+        $this->productModel = $productModel;
+    }
+
+    public function getProductModel()
+    {
+        return $this->productModel;
     }
 
     public function getVariationFromTheliaPseId($pseId)
