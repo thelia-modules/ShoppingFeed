@@ -14,6 +14,7 @@ namespace ShoppingFeed;
 
 use Propel\Runtime\Connection\ConnectionInterface;
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
+use Symfony\Component\Finder\Finder;
 use Thelia\Install\Database;
 use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
@@ -82,6 +83,23 @@ class ShoppingFeed extends AbstractPaymentModule
         }
     }
 
+    public function update($currentVersion, $newVersion, ConnectionInterface $con = null)
+    {
+        $finder = Finder::create()
+            ->name('*.sql')
+            ->depth(0)
+            ->sortByName()
+            ->in(__DIR__ . DS . 'Config' . DS . 'update');
+
+        $database = new Database($con);
+
+        /** @var \SplFileInfo $file */
+        foreach ($finder as $file) {
+            if (version_compare($currentVersion, $file->getBasename('.sql'), '<')) {
+                $database->insertSql(null, [$file->getPathname()]);
+            }
+        }
+    }
 
     public function pay(Order $order)
     {}

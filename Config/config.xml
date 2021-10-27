@@ -48,6 +48,9 @@
         <service id="shopping_feed_pse_form_extend" class="ShoppingFeed\EventListener\FormExtend\ProductSaleElementsFormExtend">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="shopping_feed_product_form_extend" class="ShoppingFeed\EventListener\FormExtend\ProductFormExtend">
+            <tag name="kernel.event_subscriber"/>
+        </service>
 
         <!-- Loop Extend -->
         <service id="shopping_feed_module_list_extend" class="ShoppingFeed\EventListener\LoopExtend\ModuleListLoopExtend">
@@ -62,6 +65,7 @@
             <tag name="hook.event_listener" event="main.head-css" type="back" />
             <tag name="hook.event_listener" event="home.js" type="back" method="renderJs" />
             <tag name="hook.event_listener" event="product.combinations-row" type="back" method="onPseMarketPlaceEdit" />
+            <tag name="hook.event_listener" event="product.modification.form-right.top" type="back" method="onProductEdit" />
             <tag name="hook.event_listener" event="order-edit.top" type="back" method="onOrderEdit" />
         </hook>
     </hooks>

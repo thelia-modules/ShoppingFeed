@@ -3,6 +3,7 @@
 namespace ShoppingFeed\Hook;
 
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
+use ShoppingFeed\Model\ShoppingfeedProductMarketplaceCategoryQuery;
 use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use ShoppingFeed\Service\LogService;
 use Thelia\Core\Event\Hook\HookRenderEvent;
@@ -57,6 +58,17 @@ class HookManager extends BaseHook
                 'pseId' => $event->getArgument('pse'),
                 'idx' => $event->getArgument('idx'),
                 'marketplace' => ($marketplace) ? $marketplace->getMarketplace() : ''
+            ]
+        ));
+    }
+
+    public function onProductEdit(HookRenderEvent $event)
+    {
+        $marketplaceCategory = ShoppingfeedProductMarketplaceCategoryQuery::create()->filterByProductId($event->getArgument('product_id'))->findOne();
+        $event->add($this->render(
+            'shoppingfeed/hook/product-edit-marketplace-category.html',
+            [
+                'marketplaceCategoryId' => ($marketplaceCategory) ? $marketplaceCategory->getCategoryId() : 0
             ]
         ));
     }

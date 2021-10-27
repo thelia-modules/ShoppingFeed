@@ -63,5 +63,16 @@
         </foreign-key>
     </table>
 
+    <table name="shoppingfeed_product_marketplace_category"  namespace="ShoppingFeed\Model">
+        <column name="product_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="category_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="product" name="fk_shoppingfeed_product_marketplace_category_product_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="product_id" />
+        </foreign-key>
+        <foreign-key foreignTable="category" name="fk_shoppingfeed_product_marketplace_category_category_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="category_id" />
+        </foreign-key>
+    </table>
+
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>

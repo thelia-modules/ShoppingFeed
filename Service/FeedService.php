@@ -3,8 +3,7 @@
 namespace ShoppingFeed\Service;
 
 use ShoppingFeed\Event\FeedProductExtraFieldEvent;
-use ShoppingFeed\Event\FeedPSEExtraFieldEvent;
-use ShoppingFeed\Event\ShoppingFeedEvents;
+use ShoppingFeed\Event\FeedPseExtraFieldEvent;
 use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\ProductFeedResult;
 use ShoppingFeed\Feed\ProductGenerator;
@@ -66,15 +65,10 @@ class FeedService
 
             $productIn->setLocale($locale);
 
-            $taxedPrice = $defaultSaleElements->getTaxedPrice($country);
-            $untaxedPrice = $defaultSaleElements->getPrice();
-
-            $vat = ($untaxedPrice / $taxedPrice) * 100;
-
             // Mandatory fields
             $productOut->setName($productIn->getTitle())
                 ->setReference($productIn->getRef())
-                ->setPrice($defaultSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
+                ->setPrice($defaultSaleElements->getTaxedPrice($country))
                 ->setQuantity($defaultSaleElements->getQuantity());
 
 
@@ -90,10 +84,15 @@ class FeedService
 
             $productOut->setAdditionalImages($images);
 
-            $defaultCategory = CategoryQuery::create()->filterById($productIn->getDefaultCategoryId())->findOne();
-            if ($defaultCategory) {
-                $productOut->setCategory($defaultCategory->setLocale($locale)->getTitle());
+            $marketplaceCategory = CategoryQuery::create()
+                ->useShoppingfeedProductMarketplaceCategoryQuery()
+                ->filterByProductId($productIn->getId())
+                ->endUse()
+                ->findOne();
+            if (null === $marketplaceCategory) {
+                $marketplaceCategory = CategoryQuery::create()->filterById($productIn->getDefaultCategoryId())->findOne();
             }
+            $productOut->setCategory($marketplaceCategory->setLocale($locale)->getTitle());
 
             $brand = $productIn->getBrand();
             if ($brand) {
