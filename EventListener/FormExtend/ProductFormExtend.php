@@ -71,6 +71,15 @@ class ProductFormExtend implements EventSubscriberInterface
 
         $data = $formEvent->getData();
 
+        if ($data["marketplace_category"] === "0") {
+            $marketplaceCategory = ShoppingfeedProductMarketplaceCategoryQuery::create()->filterByProductId($data["id"])->findOne();
+            if ($marketplaceCategory) {
+                $marketplaceCategory->delete();
+            }
+            return;
+        }
+
+
         $marketplaceCategory = ShoppingfeedProductMarketplaceCategoryQuery::create()->filterByProductId($data["id"])->findOneOrCreate();
         $marketplaceCategory->setProductId($data["id"]);
         $marketplaceCategory->setCategoryId($data["marketplace_category"]);
