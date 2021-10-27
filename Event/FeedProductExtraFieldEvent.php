@@ -8,6 +8,8 @@ use Thelia\Core\Event\ActionEvent;
 
 class FeedProductExtraFieldEvent extends ActionEvent
 {
+    const SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD = 'action.module.shoppingfeed.feed.product.extra.field';
+
     protected $product;
     protected $productModel;
 

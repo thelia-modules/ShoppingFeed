@@ -138,13 +138,13 @@ class FeedService
                 $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
                 $pseExtraFieldEvent->setPse($productSaleElements);
                 $pseExtraFieldEvent->setVariation($variation);
-                $this->eventDispatcher->dispatch(ShoppingfeedEvents::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
+                $this->eventDispatcher->dispatch(FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
             }
 
             $productExtraFieldEvent = new FeedProductExtraFieldEvent();
             $productExtraFieldEvent->setProduct($productOut);
             $productExtraFieldEvent->setProductModel($productIn);
-            $this->eventDispatcher->dispatch(ShoppingfeedEvents::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $productExtraFieldEvent);
+            $this->eventDispatcher->dispatch(FeedProductExtraFieldEvent::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $productExtraFieldEvent);
         });
 
         $products = ProductQuery::create()

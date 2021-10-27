@@ -10,6 +10,8 @@ use Thelia\Model\ProductSaleElements;
 
 class FeedPseExtraFieldEvent extends ActionEvent
 {
+    const SHOPPINGFEED_FEED_PSE_EXTRA_FIELD = 'action.module.shoppingfeed.feed.pse.extra.field';
+
     protected $variation;
     protected $pse;
 
