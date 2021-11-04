@@ -36,130 +36,146 @@ class FeedService
      */
     public function generateFeed(ShoppingfeedFeed $feed)
     {
-        $feedFilePrefix = $feed->getFeedFilePrefix();
-        $country = $feed->getCountry();
-        $lang = $feed->getLang();
+        $productFeedResult = null;
+        try {
+            $feedFilePrefix = $feed->getFeedFilePrefix();
+            $country = $feed->getCountry();
+            $lang = $feed->getLang();
 
-        $generator = (new ProductGenerator())
-            ->setPlatform("Thelia", Thelia::THELIA_VERSION);
+            $generator = (new ProductGenerator())
+                ->setPlatform("Thelia", Thelia::THELIA_VERSION);
 
-        $generator->addMapper(function (\Thelia\Model\Product $productIn, Product $productOut) use ($country, $lang) {
-            $locale = $lang->getLocale();
-            $productSaleElementss = ProductSaleElementsQuery::create()
-                ->useProductPriceQuery()
-                ->endUse()
-                ->withColumn(ProductPriceTableMap::COL_PRICE, "price_PRICE")
-                ->filterByProductId($productIn->getId())
+            $generator->addMapper(function (\Thelia\Model\Product $productIn, Product $productOut) use ($country, $lang) {
+
+                $locale = $lang->getLocale();
+                $productSaleElementss = ProductSaleElementsQuery::create()
+                    ->useProductPriceQuery()
+                    ->endUse()
+                    ->withColumn(ProductPriceTableMap::COL_PRICE, "price_PRICE")
+                    ->filterByProductId($productIn->getId())
+                    ->find();
+
+                $defaultSaleElements = null;
+                foreach ($productSaleElementss as $productSaleElements) {
+                    if ($productSaleElements->isDefault()) {
+                        $defaultSaleElements = $productSaleElements;
+                    }
+                }
+
+                if (null === $defaultSaleElements) {
+                    $defaultSaleElements = $productSaleElementss->getFirst();
+                }
+
+                $productIn->setLocale($locale);
+
+                // Mandatory fields
+                $productOut->setName($productIn->getTitle())
+                    ->setReference($productIn->getRef())
+                    ->setPrice($defaultSaleElements->getTaxedPrice($country))
+                    ->setQuantity($defaultSaleElements->getQuantity());
+
+
+                // Optional fields
+                $productOut->setDescription($productIn->getDescription())
+                    ->setLink(URL::getInstance()->absoluteUrl($productIn->getRewrittenUrl($locale)));
+
+                $images = $this->getImageData($productIn->getProductImages());
+                if (!empty($images)) {
+                    $productOut->setMainImage($images[0]);
+                    unset($images[0]);
+                }
+
+                $productOut->setAdditionalImages($images);
+
+                $marketplaceCategory = CategoryQuery::create()
+                    ->useShoppingfeedProductMarketplaceCategoryQuery()
+                    ->filterByProductId($productIn->getId())
+                    ->endUse()
+                    ->findOne();
+                if (null === $marketplaceCategory) {
+                    $marketplaceCategory = CategoryQuery::create()->filterById($productIn->getDefaultCategoryId())->findOne();
+                }
+                $productOut->setCategory($marketplaceCategory->setLocale($locale)->getTitle());
+
+                $brand = $productIn->getBrand();
+                if ($brand) {
+                    $productOut->setBrand($brand->setLocale($locale)->getTitle());
+                }
+
+                foreach ($productIn->getFeatureProducts() as $featureProduct) {
+                    $feature = $featureProduct->getFeature()->setLocale($locale);
+                    $featureAv = $featureProduct->getFeatureAv()->setLocale($locale);
+                    $productOut->setAttribute($feature->getTitle(), $featureAv->getTitle());
+                }
+
+                $productOut->setAttribute("thelia_id", $productIn->getId());
+
+                if (count($productSaleElementss) > 1) {
+                    foreach ($productSaleElementss as $productSaleElements) {
+                        $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
+                        $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
+
+                        $variation = $productOut->createVariation();
+                        $variation
+                            ->setReference($reference)
+                            ->setPrice($productSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
+                            ->setQuantity($productSaleElements->getQuantity());
+
+                        $variation->setAttribute('weight', $productSaleElements->getWeight());
+                        if ($productSaleElements->getEanCode()) {
+                            $variation->setAttribute('ean', $productSaleElements->getEanCode());
+                        }
+
+                        if ($pseMarketplace) {
+                            $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
+                        }
+
+                        foreach ($productSaleElements->getAttributeCombinations() as $attributeCombination) {
+                            $attribute = $attributeCombination->getAttribute()->setLocale($locale);
+                            $attributeAv = $attributeCombination->getAttributeAv()->setLocale($locale);
+                            $variation->setAttribute($attribute->getTitle(), $attributeAv->getTitle());
+                        }
+
+                        $variation->setAttribute("thelia_id", $productSaleElements->getId());
+
+                        $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
+                        $pseExtraFieldEvent->setPse($productSaleElements);
+                        $pseExtraFieldEvent->setVariation($variation);
+                        $this->eventDispatcher->dispatch(FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
+                    }
+                }
+
+                $productExtraFieldEvent = new FeedProductExtraFieldEvent();
+                $productExtraFieldEvent->setProduct($productOut);
+                $productExtraFieldEvent->setProductModel($productIn);
+                $this->eventDispatcher->dispatch(FeedProductExtraFieldEvent::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $productExtraFieldEvent);
+            });
+
+            $products = ProductQuery::create()
                 ->find();
 
-            $defaultSaleElements = null;
-            foreach ($productSaleElementss as $productSaleElements) {
-                if ($productSaleElements->isDefault()) {
-                    $defaultSaleElements = $productSaleElements;
-                }
-            }
+            $generator->setUri('file://' . THELIA_WEB_DIR . $feedFilePrefix . '_shopping_feed.xml');
 
-            if (null === $defaultSaleElements) {
-                $defaultSaleElements = $productSaleElementss->getFirst();
-            }
+            $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCLUDE);
 
-            $productIn->setLocale($locale);
+            $productFeedResult = $generator->write($products);
 
-            // Mandatory fields
-            $productOut->setName($productIn->getTitle())
-                ->setReference($productIn->getRef())
-                ->setPrice($defaultSaleElements->getTaxedPrice($country))
-                ->setQuantity($defaultSaleElements->getQuantity());
-
-
-            // Optional fields
-            $productOut->setDescription($productIn->getDescription())
-                ->setLink(URL::getInstance()->absoluteUrl($productIn->getRewrittenUrl($locale)));
-
-            $images = $this->getImageData($productIn->getProductImages());
-            if (!empty($images)) {
-                $productOut->setMainImage($images[0]);
-                unset($images[0]);
-            }
-
-            $productOut->setAdditionalImages($images);
-
-            $marketplaceCategory = CategoryQuery::create()
-                ->useShoppingfeedProductMarketplaceCategoryQuery()
-                ->filterByProductId($productIn->getId())
-                ->endUse()
-                ->findOne();
-            if (null === $marketplaceCategory) {
-                $marketplaceCategory = CategoryQuery::create()->filterById($productIn->getDefaultCategoryId())->findOne();
-            }
-            $productOut->setCategory($marketplaceCategory->setLocale($locale)->getTitle());
-
-            $brand = $productIn->getBrand();
-            if ($brand) {
-                $productOut->setBrand($brand->setLocale($locale)->getTitle());
-            }
-
-            foreach ($productIn->getFeatureProducts() as $featureProduct) {
-                $feature = $featureProduct->getFeature()->setLocale($locale);
-                $featureAv = $featureProduct->getFeatureAv()->setLocale($locale);
-                $productOut->setAttribute($feature->getTitle(), $featureAv->getTitle());
-            }
-
-            $productOut->setAttribute("thelia_id", $productIn->getId());
-
-            foreach ($productSaleElementss as $productSaleElements) {
-                $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
-                $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
-
-                $variation = $productOut->createVariation();
-                $variation
-                    ->setReference($reference)
-                    ->setPrice($productSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
-                    ->setQuantity($productSaleElements->getQuantity());
-
-                $variation->setAttribute('weight', $productSaleElements->getWeight());
-                if ($productSaleElements->getEanCode()) {
-                    $variation->setAttribute('ean', $productSaleElements->getEanCode());
-                }
-
-                if ($pseMarketplace) {
-                    $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
-                }
-
-                foreach ($productSaleElements->getAttributeCombinations() as $attributeCombination) {
-                    $attribute = $attributeCombination->getAttribute()->setLocale($locale);
-                    $attributeAv = $attributeCombination->getAttributeAv()->setLocale($locale);
-                    $variation->setAttribute($attribute->getTitle(), $attributeAv->getTitle());
-                }
-
-                $variation->setAttribute("thelia_id", $productSaleElements->getId());
-
-                $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
-                $pseExtraFieldEvent->setPse($productSaleElements);
-                $pseExtraFieldEvent->setVariation($variation);
-                $this->eventDispatcher->dispatch(FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
-            }
-
-            $productExtraFieldEvent = new FeedProductExtraFieldEvent();
-            $productExtraFieldEvent->setProduct($productOut);
-            $productExtraFieldEvent->setProductModel($productIn);
-            $this->eventDispatcher->dispatch(FeedProductExtraFieldEvent::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $productExtraFieldEvent);
-        });
-
-        $products = ProductQuery::create()
-            ->find();
-
-        $generator->setUri('file://'.THELIA_WEB_DIR.$feedFilePrefix.'_shopping_feed.xml');
-        $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCEPTION);
-
+        }  catch (\Exception $exception) {
+            $this->logger->log(
+                'Error during xml generation : '.$exception->getMessage(),
+                LogService::LEVEL_ERROR,
+                $feed
+            );
+            return null;
+        }
 
         $this->logger->log(
-            'Catalog '.$country->getIsoalpha2().' generated with success.',
+            'Catalog ' . $country->getIsoalpha2() . ' xml generated with success.',
             LogService::LEVEL_SUCCESS,
             $feed
         );
 
-        return $generator->write($products);
+        return $productFeedResult;
     }
 
     protected function getImageData($images)
