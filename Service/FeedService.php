@@ -123,8 +123,10 @@ class FeedService
 
                         $variation->setAttribute('weight', $productSaleElements->getWeight());
                         if ($productSaleElements->getEanCode()) {
-                            $variation->setAttribute('ean', $productSaleElements->getEanCode());
+                            $variation->setGtin($productSaleElements->getEanCode());
                         }
+
+
 
                         if ($pseMarketplace) {
                             $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
