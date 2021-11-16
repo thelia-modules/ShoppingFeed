@@ -110,41 +110,37 @@ class FeedService
 
                 $productOut->setAttribute("thelia_id", $productIn->getId());
 
-                if (count($productSaleElementss) > 1) {
-                    foreach ($productSaleElementss as $productSaleElements) {
-                        $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
-                        $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
+                foreach ($productSaleElementss as $productSaleElements) {
+                    $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
+                    $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
 
-                        $variation = $productOut->createVariation();
-                        $variation
-                            ->setReference($reference)
-                            ->setPrice($productSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
-                            ->setQuantity($productSaleElements->getQuantity());
+                    $variation = $productOut->createVariation();
+                    $variation
+                        ->setReference($reference)
+                        ->setPrice($productSaleElements->getTaxedPrice($country)) // Todo maybe get promo price
+                        ->setQuantity($productSaleElements->getQuantity());
 
-                        $variation->setAttribute('weight', $productSaleElements->getWeight());
-                        if ($productSaleElements->getEanCode()) {
-                            $variation->setGtin($productSaleElements->getEanCode());
-                        }
-
-
-
-                        if ($pseMarketplace) {
-                            $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
-                        }
-
-                        foreach ($productSaleElements->getAttributeCombinations() as $attributeCombination) {
-                            $attribute = $attributeCombination->getAttribute()->setLocale($locale);
-                            $attributeAv = $attributeCombination->getAttributeAv()->setLocale($locale);
-                            $variation->setAttribute($attribute->getTitle(), $attributeAv->getTitle());
-                        }
-
-                        $variation->setAttribute("thelia_id", $productSaleElements->getId());
-
-                        $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
-                        $pseExtraFieldEvent->setPse($productSaleElements);
-                        $pseExtraFieldEvent->setVariation($variation);
-                        $this->eventDispatcher->dispatch(FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
+                    $variation->setAttribute('weight', $productSaleElements->getWeight());
+                    if ($productSaleElements->getEanCode()) {
+                        $variation->setGtin($productSaleElements->getEanCode());
                     }
+
+                    if ($pseMarketplace) {
+                        $variation->setAttribute("marketplace", $pseMarketplace->getMarketplace());
+                    }
+
+                    foreach ($productSaleElements->getAttributeCombinations() as $attributeCombination) {
+                        $attribute = $attributeCombination->getAttribute()->setLocale($locale);
+                        $attributeAv = $attributeCombination->getAttributeAv()->setLocale($locale);
+                        $variation->setAttribute($attribute->getTitle(), $attributeAv->getTitle());
+                    }
+
+                    $variation->setAttribute("thelia_id", $productSaleElements->getId());
+
+                    $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
+                    $pseExtraFieldEvent->setPse($productSaleElements);
+                    $pseExtraFieldEvent->setVariation($variation);
+                    $this->eventDispatcher->dispatch(FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
                 }
 
                 $productExtraFieldEvent = new FeedProductExtraFieldEvent();
@@ -158,7 +154,7 @@ class FeedService
 
             $generator->setUri('file://' . THELIA_WEB_DIR . $feedFilePrefix . '_shopping_feed.xml');
 
-            $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCLUDE);
+            $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCEPTION);
 
             $productFeedResult = $generator->write($products);
 
