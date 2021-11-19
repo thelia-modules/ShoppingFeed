@@ -16,6 +16,7 @@ use Thelia\Core\Thelia;
 use Thelia\Model\Base\CategoryQuery;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Map\ProductPriceTableMap;
+use Thelia\Model\ProductImage;
 use Thelia\Model\ProductQuery;
 use Thelia\Model\ProductSaleElementsQuery;
 use Thelia\Tools\URL;
@@ -80,9 +81,9 @@ class FeedService
                     ->setLink(URL::getInstance()->absoluteUrl($productIn->getRewrittenUrl($locale)));
 
                 $images = $this->getImageData($productIn->getProductImages());
+                ksort($images);
                 if (!empty($images)) {
-                    $productOut->setMainImage($images[0]);
-                    unset($images[0]);
+                    $productOut->setMainImage(array_shift($images));
                 }
 
                 $productOut->setAdditionalImages($images);
@@ -180,13 +181,14 @@ class FeedService
     {
         $data = [];
 
+        /** @var ProductImage $image */
         foreach ($images as $image) {
             if (null !== $image) {
                 try {
                     $imageEvent = self::createImageEvent($image->getFile());
                     $this->eventDispatcher->dispatch(TheliaEvents::IMAGE_PROCESS, $imageEvent);
 
-                    $data[] = $imageEvent->getOriginalFileUrl();
+                    $data[$image->getPosition()] = $imageEvent->getOriginalFileUrl();
                 } catch (\Exception $e) {
                     $error = $e->getMessage();
                 }
