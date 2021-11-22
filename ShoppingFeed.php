@@ -39,7 +39,7 @@ class ShoppingFeed extends AbstractPaymentModule
     public static function getShoppingFeedCustomer()
     {
         $customer = CustomerQuery::create()
-            ->filterByRef("SHOPPING_FEED")
+            ->filterByRef("CIB03805")
             ->findOne();
 
         if (null !== $customer) {
@@ -58,7 +58,7 @@ class ShoppingFeed extends AbstractPaymentModule
             ->setLangId($lang->getId())
             ->setTitleId($customerTitle->getId())
             ->setEmail('module-shoppingfeed@thelia.net')
-            ->setRef("SHOPPING_FEED");
+            ->setRef("CIB03805");
 
         $customer->save();
 
