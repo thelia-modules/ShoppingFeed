@@ -44,7 +44,11 @@ class MappingDeliveryForm extends BaseForm
 
     public function getDeliveryModules()
     {
-        $deliveryModules = ModuleQuery::create()->filterByType(2)->filterByCategory("delivery")->find();
+        $deliveryModules = ModuleQuery::create()
+            ->filterByType(2)
+            ->filterByCategory("delivery")
+            ->filterByActivate(1)
+            ->find();
 
         $results = [];
 
