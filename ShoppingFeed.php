@@ -36,7 +36,7 @@ class ShoppingFeed extends AbstractPaymentModule
      * Have fun !
      */
 
-    public static function getSoppingFeedCustomer()
+    public static function getShoppingFeedCustomer()
     {
         $customer = CustomerQuery::create()
             ->filterByRef("SHOPPING_FEED")

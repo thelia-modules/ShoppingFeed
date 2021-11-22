@@ -9,9 +9,13 @@ use ShoppingFeed\Model\ShoppingFeedOrderData;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 use ShoppingFeed\ShoppingFeed;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CurrencyQuery;
+use Thelia\Model\Event\CustomerEvent;
+use Thelia\Model\Event\OrderEvent;
 use Thelia\Model\Map\OrderTableMap;
 use Thelia\Model\Order;
 use Thelia\Model\OrderAddress;
@@ -26,12 +30,14 @@ use Thelia\Tools\I18n;
 
 class OrderService
 {
+    protected $eventDispatcher;
     protected $apiService;
     protected $logger;
     protected $mappingDeliveryService;
 
-    public function __construct(ApiService $apiService, LogService $logger, MappingDeliveryService $mappingDeliveryService)
+    public function __construct(EventDispatcherInterface $eventDispatcher, ApiService $apiService, LogService $logger, MappingDeliveryService $mappingDeliveryService)
     {
+        $this->eventDispatcher = $eventDispatcher;
         $this->apiService = $apiService;
         $this->logger = $logger;
         $this->mappingDeliveryService = $mappingDeliveryService;
@@ -41,7 +47,11 @@ class OrderService
     {
         $orderApi = $this->apiService->getFeedStore($feed)->getOrderApi();
         $orders = $orderApi->getAll(['filters' => ['acknowledgment' => 'unacknowledged']]);
-        $customer = ShoppingFeed::getSoppingFeedCustomer();
+
+        $customer = ShoppingFeed::getShoppingFeedCustomer();
+        $customerEvent = new CustomerEvent($customer);
+        $this->eventDispatcher->dispatch(TheliaEvents::BEFORE_CREATECUSTOMER, $customerEvent);
+
         $orderOperation = new OrderOperation();
 
         $paidStatus = OrderStatusQuery::create()->findOneByCode(OrderStatus::CODE_PAID);
@@ -202,6 +212,9 @@ class OrderService
                     }
                 }
                 $con->commit();
+                $orderUpdateEvent = new OrderEvent($theliaOrder);
+                $this->eventDispatcher->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $orderUpdateEvent);
+                $this->eventDispatcher->dispatch(TheliaEvents::ORDER_AFTER_CREATE, $orderUpdateEvent);
                 $orderOperation->acknowledge($order->getReference(), $order->getChannel()->getName(), $theliaOrder->getRef());
                 $nbImportedOrder++;
             } catch (ShoppingfeedException $shoppingfeedException) {
@@ -252,19 +265,5 @@ class OrderService
             $country =  CountryQuery::create()->filterByIsoalpha2('FR')->findOne();
         }
         return $country;
-    }
-
-    public function _importOrders(ShoppingfeedFeed $feed, $url = "/v1/store/{storeId}/order?acknowledgement=unacknowledged&limit=2")
-    {
-        $orderListResponse = $this->apiService->request($feed, $url);
-        $shoppingFeedCustomer = ShoppingFeed::getSoppingFeedCustomer();
-
-        foreach ($orderListResponse->_embedded->order as $order) {
-            $theliaOrder = (new Order());
-        }
-
-        if (property_exists($orderListResponse->_links, 'next')) {
-            $this->importOrders($feed, $orderListResponse->_links->next->href);
-        }
     }
 }
