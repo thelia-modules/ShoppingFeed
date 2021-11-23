@@ -72,6 +72,11 @@ class OrderStatusUpdateListener implements EventSubscriberInterface
                         );
                     }
                     $orderOperation->ship($orderData->getExternalReference(), $orderData->getChannel(), $mapping->getCode(), $order->getDeliveryRef());
+                    $this->logger->log(
+                        'Order ' . $orderData->getExternalReference() . '('. $orderData->getChannel() .') was successfully shipped with delivery ref :'. $order->getDeliveryRef(),
+                        LogService::LEVEL_SUCCESS,
+                        $feed
+                    );
                 }
                 $orderApi = $this->apiService->getFeedStore($feed)->getOrderApi();
                 $orderApi->execute($orderOperation);
