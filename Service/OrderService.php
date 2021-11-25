@@ -176,8 +176,8 @@ class OrderService
                         ->setPostscriptum($product->getPostscriptum())
                         // Data from shopping feed
                         ->setQuantity($item->getQuantity())
-                        ->setProductRef($item->getReference())
-                        ->setProductSaleElementsRef($item->getReference())
+                        ->setProductRef($product->getRef())
+                        ->setProductSaleElementsRef($productSaleElements->getRef())
                         ->setEanCode($item->getReference())
                         ->setPrice($untaxedPrice);
 
