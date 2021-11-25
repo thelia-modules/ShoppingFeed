@@ -17,6 +17,7 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CurrencyQuery;
+use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\Map\OrderTableMap;
 use Thelia\Model\Order;
 use Thelia\Model\OrderAddress;
@@ -247,6 +248,7 @@ class OrderService
     protected function createAddressFromData($data)
     {
         return (new OrderAddress())
+            ->setCustomerTitle(CustomerTitleQuery::create()->findOne())
             ->setFirstname($data['firstName'])
             ->setLastname($data['lastName'])
             ->setCompany($data['company'])
