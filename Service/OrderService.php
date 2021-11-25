@@ -17,11 +17,15 @@ use Thelia\Core\Event\Customer\CustomerEvent;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
+use Thelia\Model\Address;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CurrencyQuery;
+use Thelia\Model\Customer;
+use Thelia\Model\CustomerQuery;
 use Thelia\Model\CustomerTitle;
 use Thelia\Model\CustomerTitleI18nQuery;
 use Thelia\Model\CustomerTitleQuery;
+use Thelia\Model\LangQuery;
 use Thelia\Model\Map\OrderTableMap;
 use Thelia\Model\Order;
 use Thelia\Model\OrderAddress;
@@ -53,10 +57,6 @@ class OrderService
     {
         $orderApi = $this->apiService->getFeedStore($feed)->getOrderApi();
         $orders = $orderApi->getAll(['filters' => ['acknowledgment' => 'unacknowledged']]);
-
-        $customer = ShoppingFeed::getShoppingFeedCustomer();
-        $customerEvent = new CustomerEvent($customer);
-        $this->eventDispatcher->dispatch(TheliaEvents::BEFORE_CREATECUSTOMER, $customerEvent);
 
         $orderOperation = new OrderOperation();
 
@@ -93,11 +93,11 @@ class OrderService
                 }
 
                 $billingAddress = $order->getBillingAddress();
-                $theliaInvoiceAddress = $this->createAddressFromData($billingAddress, $order->getChannel()->getName());
+                $theliaInvoiceAddress = $this->createAddressFromData($billingAddress);
                 $theliaInvoiceAddress->save($con);
 
                 $shippingAddress = $order->getShippingAddress();
-                $theliaDeliveryAddress = $this->createAddressFromData($shippingAddress, $order->getChannel()->getName());
+                $theliaDeliveryAddress = $this->createAddressFromData($shippingAddress);
                 $theliaDeliveryAddress->save($con);
 
                 $currency =  CurrencyQuery::create()
@@ -124,6 +124,8 @@ class OrderService
                         $order->getShipment()["carrier"]
                     );
                 }
+
+                $customer = $this->createCustomerFromDeliveryAddress($theliaDeliveryAddress, $order->getChannel()->getName());
 
                 $theliaOrder = (new Order())
                     ->setCustomer($customer)
@@ -249,38 +251,10 @@ class OrderService
         }
     }
 
-    protected function createAddressFromData($data, $channel)
+    protected function createAddressFromData($data)
     {
-        // Here we use the customer title field in order address to store channel info (Metro, CDiscount, Amazon,..)
-        $customerChannelTitle = CustomerTitleQuery::create()
-            ->useCustomerTitleI18nQuery()
-            ->filterByLocale('fr_FR')
-            ->filterByLong($channel)
-            ->endUse()
-            ->findOne();
-
-        if (!$customerChannelTitle){
-            $higherPositionCustomerTitle = CustomerTitleQuery::create()
-                ->orderByPosition(Criteria::DESC)
-                ->findOne();
-
-            $customerChannelTitle = new CustomerTitle();
-            $customerChannelTitle->setPosition((int)$higherPositionCustomerTitle->getPosition() + 1);
-            $customerChannelTitle->setByDefault(0);
-            $customerChannelTitle->save();
-        }
-
-        $customerChannelTitleI18n = CustomerTitleI18nQuery::create()
-            ->filterById($customerChannelTitle->getId())
-            ->findOneOrCreate();
-
-        $customerChannelTitleI18n->setLocale('fr_FR');
-        $customerChannelTitleI18n->setShort(strtoupper($channel));
-        $customerChannelTitleI18n->setLong(strtoupper($channel));
-        $customerChannelTitleI18n->save();
-
         return (new OrderAddress())
-            ->setCustomerTitle($customerChannelTitle)
+            ->setCustomerTitle(CustomerTitleQuery::create()->findOne())
             ->setFirstname($data['firstName'])
             ->setLastname($data['lastName'])
             ->setCompany($data['company'])
@@ -301,5 +275,58 @@ class OrderService
             $country =  CountryQuery::create()->filterByIsoalpha2('FR')->findOne();
         }
         return $country;
+    }
+
+    protected function createCustomerFromDeliveryAddress(OrderAddress $deliveryAddress, $channel)
+    {
+        $email = $deliveryAddress->getFirstname().'.'.$deliveryAddress->getLastname().'-SF'.$deliveryAddress->getCellphone().$deliveryAddress->getPhone().'@'.$channel.'.net';
+        $customer = CustomerQuery::create()
+            ->filterByEmail($email)
+            ->findOne();
+
+        if (null !== $customer) {
+            return $customer;
+        }
+
+        $lang = LangQuery::create()
+            ->filterByByDefault(true)
+            ->findOne();
+
+        $customerTitle = CustomerTitleQuery::create()
+            ->filterByByDefault(true)
+            ->findOne();
+
+        $customer = (new Customer())
+            ->setLangId($lang->getId())
+            ->setFirstname($deliveryAddress->getFirstname())
+            ->setLastname($deliveryAddress->getLastname())
+            ->setTitleId($customerTitle->getId())
+            ->setEmail($email);
+
+
+        $customer->save();
+        $customerEvent = new CustomerEvent($customer);
+        $this->eventDispatcher->dispatch(TheliaEvents::BEFORE_CREATECUSTOMER, $customerEvent);
+
+        $address = (new Address())
+            ->setCustomerTitle($customerTitle)
+            ->setFirstname($deliveryAddress->getFirstname())
+            ->setLastname($deliveryAddress->getLastname())
+            ->setCompany($deliveryAddress->getCompany())
+            ->setAddress1($deliveryAddress->getAddress1())
+            ->setAddress2($deliveryAddress->getAddress2())
+            ->setAddress3($deliveryAddress->getAddress3())
+            ->setZipcode($deliveryAddress->getZipcode())
+            ->setCountry($deliveryAddress->getCountry())
+            ->setCity($deliveryAddress->getCity())
+            ->setPhone($deliveryAddress->getPhone())
+            ->setCellphone($deliveryAddress->getCellphone())
+            ->setLabel($channel)
+            ->setIsDefault(1)
+            ->setCustomerId($customer->getId());
+
+        $address->save();
+
+        return $customer;
     }
 }
