@@ -2,9 +2,11 @@
 
 namespace ShoppingFeed\Service;
 
+use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 use ShoppingFeed\Event\OrderCreatedEvent;
 use ShoppingFeed\Exception\ShoppingfeedException;
+use ShoppingFeed\Model\ShoppingfeedCustomerTitleChannelQuery;
 use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingFeedOrderData;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
@@ -17,6 +19,8 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CurrencyQuery;
+use Thelia\Model\CustomerTitle;
+use Thelia\Model\CustomerTitleI18nQuery;
 use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\Map\OrderTableMap;
 use Thelia\Model\Order;
@@ -89,11 +93,11 @@ class OrderService
                 }
 
                 $billingAddress = $order->getBillingAddress();
-                $theliaInvoiceAddress = $this->createAddressFromData($billingAddress);
+                $theliaInvoiceAddress = $this->createAddressFromData($billingAddress, $order->getChannel()->getName());
                 $theliaInvoiceAddress->save($con);
 
                 $shippingAddress = $order->getShippingAddress();
-                $theliaDeliveryAddress = $this->createAddressFromData($shippingAddress);
+                $theliaDeliveryAddress = $this->createAddressFromData($shippingAddress, $order->getChannel()->getName());
                 $theliaDeliveryAddress->save($con);
 
                 $currency =  CurrencyQuery::create()
@@ -245,10 +249,38 @@ class OrderService
         }
     }
 
-    protected function createAddressFromData($data)
+    protected function createAddressFromData($data, $channel)
     {
+        // Here we use the customer title field in order address to store channel info (Metro, CDiscount, Amazon,..)
+        $customerChannelTitle = CustomerTitleQuery::create()
+            ->useCustomerTitleI18nQuery()
+            ->filterByLocale('fr_FR')
+            ->filterByLong($channel)
+            ->endUse()
+            ->findOne();
+
+        if (!$customerChannelTitle){
+            $higherPositionCustomerTitle = CustomerTitleQuery::create()
+                ->orderByPosition(Criteria::DESC)
+                ->findOne();
+
+            $customerChannelTitle = new CustomerTitle();
+            $customerChannelTitle->setPosition((int)$higherPositionCustomerTitle->getPosition() + 1);
+            $customerChannelTitle->setByDefault(0);
+            $customerChannelTitle->save();
+        }
+
+        $customerChannelTitleI18n = CustomerTitleI18nQuery::create()
+            ->filterById($customerChannelTitle->getId())
+            ->findOneOrCreate();
+
+        $customerChannelTitleI18n->setLocale('fr_FR');
+        $customerChannelTitleI18n->setShort(strtoupper($channel));
+        $customerChannelTitleI18n->setLong(strtoupper($channel));
+        $customerChannelTitleI18n->save();
+
         return (new OrderAddress())
-            ->setCustomerTitle(CustomerTitleQuery::create()->findOne())
+            ->setCustomerTitle($customerChannelTitle)
             ->setFirstname($data['firstName'])
             ->setLastname($data['lastName'])
             ->setCompany($data['company'])
