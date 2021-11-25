@@ -20,6 +20,8 @@ class SynchronizeOrderCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->initRequest();
+
         /** @var OrderService $orderService */
         $orderService = $this->getContainer()->get("shopping_feed_order_service");
 

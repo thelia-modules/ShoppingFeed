@@ -3,6 +3,7 @@
 namespace ShoppingFeed\Service;
 
 use Propel\Runtime\Propel;
+use ShoppingFeed\Event\OrderCreatedEvent;
 use ShoppingFeed\Exception\ShoppingfeedException;
 use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingFeedOrderData;
@@ -213,8 +214,8 @@ class OrderService
                 }
                 $con->commit();
                 $orderUpdateEvent = new OrderEvent($theliaOrder);
-                $this->eventDispatcher->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $orderUpdateEvent);
                 $this->eventDispatcher->dispatch(TheliaEvents::ORDER_AFTER_CREATE, $orderUpdateEvent);
+                $this->eventDispatcher->dispatch(OrderCreatedEvent::SHOPPINGFEED_ORDER_CREATED, $orderUpdateEvent);
                 $orderOperation->acknowledge($order->getReference(), $order->getChannel()->getName(), $theliaOrder->getRef());
                 $nbImportedOrder++;
             } catch (ShoppingfeedException $shoppingfeedException) {
