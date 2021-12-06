@@ -56,7 +56,11 @@ class OrderService
     public function importOrders(ShoppingfeedFeed $feed)
     {
         $orderApi = $this->apiService->getFeedStore($feed)->getOrderApi();
-        $orders = $orderApi->getAll(['filters' => ['acknowledgment' => 'unacknowledged']]);
+        $orders = $orderApi->getAll([
+            'filters' => [
+                'acknowledgment' => 'unacknowledged',
+                'status' => ['waiting_shipment']
+            ]]);
 
         $orderOperation = new OrderOperation();
 
@@ -277,8 +281,24 @@ class OrderService
         return $country;
     }
 
-    protected function createCustomerFromDeliveryAddress(OrderAddress $deliveryAddress, $channel)
+    protected function createCustomerFromDeliveryAddress(OrderAddress $deliveryAddress, $channel, $feed)
     {
+        if ($deliveryAddress->getFirstname() == "") {
+            throw new ShoppingfeedException(
+                $feed,
+                Translator::getInstance()->trans("Customer do not have a firstname.", [], ShoppingFeed::DOMAIN_NAME),
+                Translator::getInstance()->trans("You can check if this data is empty on shopping feed back-office", [], ShoppingFeed::DOMAIN_NAME),
+                LogService::LEVEL_ERROR
+            );
+        }
+        if ($deliveryAddress->getLastname() == "") {
+            throw new ShoppingfeedException(
+                $feed,
+                Translator::getInstance()->trans("Customer do not have a lastname.", [], ShoppingFeed::DOMAIN_NAME),
+                Translator::getInstance()->trans("You can check if this data is empty on shopping feed back-office", [], ShoppingFeed::DOMAIN_NAME),
+                LogService::LEVEL_ERROR
+            );
+        }
         $email = $deliveryAddress->getFirstname().'.'.$deliveryAddress->getLastname().'-SF'.$deliveryAddress->getCellphone().$deliveryAddress->getPhone().'@'.$channel.'.net';
         $customer = CustomerQuery::create()
             ->filterByEmail($email)
