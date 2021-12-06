@@ -129,7 +129,7 @@ class OrderService
                     );
                 }
 
-                $customer = $this->createCustomerFromDeliveryAddress($theliaDeliveryAddress, $order->getChannel()->getName());
+                $customer = $this->createCustomerFromDeliveryAddress($theliaDeliveryAddress, $order->getChannel()->getName(), $feed, $order->getReference());
 
                 $theliaOrder = (new Order())
                     ->setCustomer($customer)
@@ -281,14 +281,17 @@ class OrderService
         return $country;
     }
 
-    protected function createCustomerFromDeliveryAddress(OrderAddress $deliveryAddress, $channel, $feed)
+    protected function createCustomerFromDeliveryAddress(OrderAddress $deliveryAddress, $channel, $feed, $orderRef)
     {
         if ($deliveryAddress->getFirstname() == "") {
             throw new ShoppingfeedException(
                 $feed,
                 Translator::getInstance()->trans("Customer do not have a firstname.", [], ShoppingFeed::DOMAIN_NAME),
                 Translator::getInstance()->trans("You can check if this data is empty on shopping feed back-office", [], ShoppingFeed::DOMAIN_NAME),
-                LogService::LEVEL_ERROR
+                LogService::LEVEL_ERROR,
+                null,
+                'Order',
+                $orderRef
             );
         }
         if ($deliveryAddress->getLastname() == "") {
@@ -296,7 +299,10 @@ class OrderService
                 $feed,
                 Translator::getInstance()->trans("Customer do not have a lastname.", [], ShoppingFeed::DOMAIN_NAME),
                 Translator::getInstance()->trans("You can check if this data is empty on shopping feed back-office", [], ShoppingFeed::DOMAIN_NAME),
-                LogService::LEVEL_ERROR
+                LogService::LEVEL_ERROR,
+                null,
+                'Order',
+                $orderRef
             );
         }
         $email = $deliveryAddress->getFirstname().'.'.$deliveryAddress->getLastname().'-SF'.$deliveryAddress->getCellphone().$deliveryAddress->getPhone().'@'.$channel.'.net';
