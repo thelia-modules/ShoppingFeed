@@ -71,7 +71,12 @@ class OrderStatusUpdateListener implements EventSubscriberInterface
                             null
                         );
                     }
-                    $orderOperation->ship($orderData->getExternalReference(), $orderData->getChannel(), $mapping->getCode(), $order->getDeliveryRef());
+                    $deliveryModule = $order->getDeliveryModuleInstance();
+                    $trackingLink = '';
+                    if (method_exists($deliveryModule, 'getTrackingLink')) {
+                        $trackingLink = $deliveryModule::getTrackingLink($order);
+                    }
+                    $orderOperation->ship($orderData->getExternalReference(), $orderData->getChannel(), $mapping->getCode(), $order->getDeliveryRef(), $trackingLink);
                     $this->logger->log(
                         'Order ' . $orderData->getExternalReference() . ' ('. $orderData->getChannel() .') was successfully shipped with delivery ref :'. $order->getDeliveryRef(),
                         LogService::LEVEL_SUCCESS,
