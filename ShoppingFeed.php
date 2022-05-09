@@ -29,42 +29,6 @@ class ShoppingFeed extends AbstractPaymentModule
     /** @var string */
     const DOMAIN_NAME = 'shoppingfeed';
 
-    /*
-     * You may now override BaseModuleInterface methods, such as:
-     * install, destroy, preActivation, postActivation, preDeactivation, postDeactivation
-     *
-     * Have fun !
-     */
-
-    public static function getShoppingFeedCustomer()
-    {
-        $customer = CustomerQuery::create()
-            ->filterByRef("CIB03805")
-            ->findOne();
-
-        if (null !== $customer) {
-            return $customer;
-        }
-
-        $lang = LangQuery::create()
-            ->filterByByDefault(true)
-            ->findOne();
-
-        $customerTitle = CustomerTitleQuery::create()
-            ->filterByByDefault(true)
-            ->findOne();
-
-        $customer = (new Customer())
-            ->setLangId($lang->getId())
-            ->setTitleId($customerTitle->getId())
-            ->setEmail('module-shoppingfeed@thelia.net')
-            ->setRef("CIB03805");
-
-        $customer->save();
-
-        return $customer;
-    }
-
     /**
      * @param ConnectionInterface|null $con
      * @throws \Propel\Runtime\Exception\PropelException
