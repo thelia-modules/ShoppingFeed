@@ -40,7 +40,9 @@ class ModuleListLoopExtend implements EventSubscriberInterface
         $loopResult = $loopEvent->getLoopResult();
         $args = $loopEvent->getLoop()->getArgumentCollection();
 
-        if ($args->get('module_type')->getValue()[0] == 1) {
+        $moduleType = $args->get('module_type')->getValue()[0] ?? null;
+
+        if ($moduleType == 1) {
             $moduleShoppingFeed = ModuleQuery::create()->filterById(ShoppingFeed::getModuleId())->findOne();
 
             if ($moduleShoppingFeed !== null) {

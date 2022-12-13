@@ -8,15 +8,23 @@ use ShoppingFeed\Model\Map\ShoppingfeedLogTableMap;
 use ShoppingFeed\Model\Map\ShoppingfeedOrderDataTableMap;
 use ShoppingFeed\Model\ShoppingfeedLogQuery;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
+use ShoppingFeed\Service\LogService;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Tools\URL;
+use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/admin/module/ShoppingFeed/logs", name="log_controller")
+ */
 class LogController extends BaseAdminController
 {
     const ORDER_DATA_JOIN = "orderDataJoin";
 
+    /**
+     * @Route("/view", name="view_log")
+     */
     public function viewAction(Request $request)
     {
         $logQuery = ShoppingfeedLogQuery::create();
@@ -127,9 +135,9 @@ class LogController extends BaseAdminController
      * @param Request $request
      * @return string
      */
-    protected function getOrderColumnName(Request $request)
+    protected function getOrderColumnName(Request $request, LogService $logService)
     {
-        $columnDefinition = $this->getContainer()->get('shopping_feed_log_service')->defineColumnsDefinition()[
+        $columnDefinition = $logService->defineColumnsDefinition()[
             (int) $request->get('order')[0]['column']
         ];
 
