@@ -17,13 +17,8 @@ use ShoppingFeed\Model\ShoppingfeedFeedQuery;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Symfony\Component\Finder\Finder;
 use Thelia\Install\Database;
-use Thelia\Model\Customer;
-use Thelia\Model\CustomerQuery;
-use Thelia\Model\CustomerTitleQuery;
-use Thelia\Model\LangQuery;
 use Thelia\Model\Order;
 use Thelia\Module\AbstractPaymentModule;
-use Thelia\Module\BaseModule;
 
 class ShoppingFeed extends AbstractPaymentModule
 {

@@ -9,6 +9,7 @@ use ShoppingFeed\Model\Map\ShoppingfeedOrderDataTableMap;
 use ShoppingFeed\Model\ShoppingfeedLogQuery;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Service\LogService;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Core\HttpFoundation\Request;
@@ -25,8 +26,10 @@ class LogController extends BaseAdminController
     /**
      * @Route("/view", name="view_log")
      */
-    public function viewAction(Request $request)
+    public function viewAction(RequestStack $requestStack, LogService $logService)
     {
+        $request = $requestStack->getCurrentRequest();
+
         $logQuery = ShoppingfeedLogQuery::create();
 
         $orderDataJoin = new Join(
@@ -42,7 +45,7 @@ class LogController extends BaseAdminController
         );
 
 
-        $this->applyOrder($request, $logQuery);
+        $this->applyOrder($requestStack, $logQuery, $logService);
 
         $queryCount = clone $logQuery;
 
@@ -131,33 +134,25 @@ class LogController extends BaseAdminController
         }
     }
 
-    /**
-     * @param Request $request
-     * @return string
-     */
-    protected function getOrderColumnName(Request $request, LogService $logService)
+    protected function getOrderColumnName(RequestStack $requestStack, LogService $logService)
     {
         $columnDefinition = $logService->defineColumnsDefinition()[
-            (int) $request->get('order')[0]['column']
+            (int) $requestStack->getCurrentRequest()->get('order')[0]['column']
         ];
 
         return $columnDefinition['orm'];
     }
 
-    protected function applyOrder(Request $request, ShoppingfeedLogQuery $query)
+    protected function applyOrder(RequestStack $requestStack, ShoppingfeedLogQuery $query, LogService $logService)
     {
         $query->orderBy(
-            $this->getOrderColumnName($request),
-            $this->getOrderDir($request)
+            $this->getOrderColumnName($requestStack, $logService),
+            $this->getOrderDir($requestStack)
         );
     }
 
-    /**
-     * @param Request $request
-     * @return string
-     */
-    protected function getOrderDir(Request $request)
+    protected function getOrderDir(RequestStack $requestStack)
     {
-        return (string) $request->get('order')[0]['dir'] === 'asc' ? Criteria::ASC : Criteria::DESC;
+        return (string) $requestStack->getCurrentRequest()->get('order')[0]['dir'] === 'asc' ? Criteria::ASC : Criteria::DESC;
     }
 }

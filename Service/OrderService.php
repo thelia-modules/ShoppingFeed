@@ -226,8 +226,8 @@ class OrderService
                 $con->commit();
                 $orderUpdateEvent = new OrderEvent($theliaOrder);
                 $orderUpdateEvent->setStatus($theliaOrder->getStatusId());
-                $this->eventDispatcher->dispatch(TheliaEvents::ORDER_AFTER_CREATE, $orderUpdateEvent);
-                $this->eventDispatcher->dispatch(OrderCreatedEvent::SHOPPINGFEED_ORDER_CREATED, $orderUpdateEvent);
+                $this->eventDispatcher->dispatch($orderUpdateEvent, TheliaEvents::ORDER_PRODUCT_AFTER_CREATE);
+                $this->eventDispatcher->dispatch($orderUpdateEvent, OrderCreatedEvent::SHOPPINGFEED_ORDER_CREATED);
                 $orderOperation->acknowledge($order->getReference(), $order->getChannel()->getName(), $theliaOrder->getRef());
                 $nbImportedOrder++;
             } catch (ShoppingfeedException $shoppingfeedException) {
@@ -332,7 +332,7 @@ class OrderService
 
         $customer->save();
         $customerEvent = new CustomerEvent($customer);
-        $this->eventDispatcher->dispatch(TheliaEvents::BEFORE_CREATECUSTOMER, $customerEvent);
+        $this->eventDispatcher->dispatch($customerEvent, TheliaEvents::CUSTOMER_CREATEACCOUNT);
 
         $address = (new Address())
             ->setCustomerTitle($customerTitle)

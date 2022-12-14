@@ -141,13 +141,13 @@ class FeedService
                     $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
                     $pseExtraFieldEvent->setPse($productSaleElements);
                     $pseExtraFieldEvent->setVariation($variation);
-                    $this->eventDispatcher->dispatch(FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD, $pseExtraFieldEvent);
+                    $this->eventDispatcher->dispatch($pseExtraFieldEvent, FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD);
                 }
 
                 $productExtraFieldEvent = new FeedProductExtraFieldEvent();
                 $productExtraFieldEvent->setProduct($productOut);
                 $productExtraFieldEvent->setProductModel($productIn);
-                $this->eventDispatcher->dispatch(FeedProductExtraFieldEvent::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD, $productExtraFieldEvent);
+                $this->eventDispatcher->dispatch($productExtraFieldEvent, FeedProductExtraFieldEvent::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD);
             });
 
             $products = ProductQuery::create()
@@ -159,9 +159,9 @@ class FeedService
 
             $productFeedResult = $generator->write($products);
 
-        }  catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $this->logger->log(
-                'Error during xml generation : '.$exception->getMessage(),
+                'Error during xml generation : ' . $exception->getMessage(),
                 LogService::LEVEL_ERROR,
                 $feed
             );
@@ -186,7 +186,7 @@ class FeedService
             if (null !== $image) {
                 try {
                     $imageEvent = self::createImageEvent($image->getFile());
-                    $this->eventDispatcher->dispatch(TheliaEvents::IMAGE_PROCESS, $imageEvent);
+                    $this->eventDispatcher->dispatch($imageEvent, TheliaEvents::IMAGE_PROCESS);
 
                     $data[$image->getPosition()] = $imageEvent->getOriginalFileUrl();
                 } catch (\Exception $e) {

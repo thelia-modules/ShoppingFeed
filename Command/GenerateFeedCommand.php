@@ -17,6 +17,7 @@ class GenerateFeedCommand extends ContainerAwareCommand
      */
     public function __construct(FeedService $feedService)
     {
+        parent::__construct();
         $this->feedService = $feedService;
     }
 
@@ -28,7 +29,7 @@ class GenerateFeedCommand extends ContainerAwareCommand
             ->setDescription("Generate feed for Shopping Feed");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->initRequest();
 

@@ -69,7 +69,7 @@
                             {form_field form=$form field="module_id"}
                                 <div class="form-group">
                                     <label for="{$name}"></label>
-                                    <select class="form-control" name="{$name}" id="{$label_attr.for}">
+                                    <select class="form-control" name="{$name}" id="{$label_attr.for|default:null}">
                                         <option value="">{intl l="-- Select a delivery module --"}</option>
                                         {foreach $choices as $module}
                                             <option value="{$module->value}">{$module->label}</option>

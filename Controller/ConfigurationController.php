@@ -20,20 +20,20 @@ class ConfigurationController extends BaseAdminController
     /**
      * @Route("", name="view")
      */
-    public function viewAction(LogService $logService)
+    public function viewAction(LogService $logService, MappingDeliveryService $deliveryService)
     {
         return $this->render(
             "shoppingfeed/configuration",
             [
                 "feeds" => ShoppingfeedFeedQuery::create()->find(),
                 "mappings" => ShoppingfeedMappingDeliveryQuery::create()->find(),
-                "missingMappings" => $this->getMissingMappings(),
+                "missingMappings" => $this->getMissingMappings($deliveryService),
                 'columnsDefinition' => $logService->defineColumnsDefinition(),
             ]
         );
     }
 
-    public function getMissingMappings(MappingDeliveryService $deliveryService)
+    private function getMissingMappings(MappingDeliveryService $deliveryService)
     {
         $missingMappings = ShoppingfeedLogQuery::create()
             ->filterByObjectType('Mapping')
