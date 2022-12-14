@@ -10,6 +10,18 @@ use Thelia\Command\ContainerAwareCommand;
 
 class GenerateFeedCommand extends ContainerAwareCommand
 {
+    protected FeedService $feedService;
+
+    /**
+     * @param FeedService $feedService
+     */
+    public function __construct(FeedService $feedService)
+    {
+        parent::__construct();
+        $this->feedService = $feedService;
+    }
+
+
     protected function configure()
     {
         $this
@@ -17,16 +29,14 @@ class GenerateFeedCommand extends ContainerAwareCommand
             ->setDescription("Generate feed for Shopping Feed");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->initRequest();
-        /** @var FeedService $feedService */
-        $feedService = $this->getContainer()->get("shopping_feed_feed_service");
 
         $feeds = ShoppingfeedFeedQuery::create()->find();
 
         foreach ($feeds as $feed) {
-            $feedService->generateFeed($feed);
+            $this->feedService->generateFeed($feed);
         }
 
         return 1;
