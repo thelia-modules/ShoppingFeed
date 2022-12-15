@@ -19,7 +19,7 @@ use Thelia\Tools\URL;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/module/ShoppingFeed/feed", name="feed_controller")
+ * @Route("/admin/module/ShoppingFeed/feed", name="shopping_feed_feed_")
  */
 class FeedController extends BaseAdminController
 {

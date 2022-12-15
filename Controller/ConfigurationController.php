@@ -13,7 +13,7 @@ use Thelia\Model\ModuleQuery;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/module/ShoppingFeed", name="config_module")
+ * @Route("/admin/module/ShoppingFeed", name="shopping_feed_admin_config_")
  */
 class ConfigurationController extends BaseAdminController
 {
