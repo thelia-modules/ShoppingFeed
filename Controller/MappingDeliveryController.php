@@ -20,7 +20,7 @@ use Thelia\Tools\URL;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/module/ShoppingFeed/mapping", name="mapping_controller")
+ * @Route("/admin/module/ShoppingFeed/mapping", name="shopping_feed_mapping_")
  */
 class MappingDeliveryController extends BaseAdminController
 {

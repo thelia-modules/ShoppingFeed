@@ -17,7 +17,7 @@ use Thelia\Tools\URL;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/admin/module/ShoppingFeed/logs", name="log_controller")
+ * @Route("/admin/module/ShoppingFeed/logs", name="shopping_feed_log_")
  */
 class LogController extends BaseAdminController
 {
