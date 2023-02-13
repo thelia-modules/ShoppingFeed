@@ -13,6 +13,7 @@ use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 use ShoppingFeed\ShoppingFeed;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Thelia\Core\Event\Customer\CustomerCreateOrUpdateEvent;
 use Thelia\Core\Event\Customer\CustomerEvent;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
@@ -322,36 +323,31 @@ class OrderService
             ->filterByByDefault(true)
             ->findOne();
 
-        $customer = (new Customer())
-            ->setLangId($lang->getId())
-            ->setFirstname($deliveryAddress->getFirstname())
-            ->setLastname($deliveryAddress->getLastname())
-            ->setTitleId($customerTitle->getId())
-            ->setEmail($email);
+        $customerEvent = new CustomerCreateOrUpdateEvent(
+            $customerTitle->getId(),
+            $deliveryAddress->getFirstname(),
+            $deliveryAddress->getLastname(),
+            $deliveryAddress->getAddress1(),
+            $deliveryAddress->getAddress2(),
+            $deliveryAddress->getAddress3(),
+            $deliveryAddress->getPhone(),
+            $deliveryAddress->getCellphone(),
+            $deliveryAddress->getZipcode(),
+            $deliveryAddress->getCity(),
+            $deliveryAddress->getCountry()->getId(),
+            $email,
+            md5($email),
+            $lang->getId()
+        );
 
-
-        $customer->save();
-        $customerEvent = new CustomerEvent($customer);
         $this->eventDispatcher->dispatch($customerEvent, TheliaEvents::CUSTOMER_CREATEACCOUNT);
 
-        $address = (new Address())
-            ->setCustomerTitle($customerTitle)
-            ->setFirstname($deliveryAddress->getFirstname())
-            ->setLastname($deliveryAddress->getLastname())
-            ->setCompany($deliveryAddress->getCompany())
-            ->setAddress1($deliveryAddress->getAddress1())
-            ->setAddress2($deliveryAddress->getAddress2())
-            ->setAddress3($deliveryAddress->getAddress3())
-            ->setZipcode($deliveryAddress->getZipcode())
-            ->setCountry($deliveryAddress->getCountry())
-            ->setCity($deliveryAddress->getCity())
-            ->setPhone($deliveryAddress->getPhone())
-            ->setCellphone($deliveryAddress->getCellphone())
-            ->setLabel($channel)
-            ->setIsDefault(1)
-            ->setCustomerId($customer->getId());
+        $customer = $customerEvent->getCustomer();
 
-        $address->save();
+        $customer->getDefaultAddress()
+            ->setCompany($deliveryAddress->getCompany())
+            ->setLabel($channel)
+            ->save();
 
         return $customer;
     }
