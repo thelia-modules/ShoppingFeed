@@ -56,7 +56,6 @@ class HookManager extends BaseHook
             'shoppingfeed/hook/pse-edit-marketplace.html',
             [
                 'pseId' => $event->getArgument('pse'),
-                'idx' => $event->getArgument('idx'),
                 'marketplace' => ($marketplace) ? $marketplace->getMarketplace() : ''
             ]
         ));

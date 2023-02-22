@@ -1,12 +1,13 @@
 <tr></tr>
 <!-- Marketplace -->
 <tr>
-    {form_field field='marketplace' value_key=$idx}
+    {$form_field_name="marketplace_pse{$pseId}"}
+    {form_field field=$form_field_name}
         <td colspan="1" class="text-right">
             <label for="marketplace">{intl l='Marketplace' d='shoppingfeed.bo.default'}</label>
         </td>
         <td colspan="1">
-            <input class="input-sm form-control" type="text" name="{$name}" value="{$marketplace}" />
+            <input class="input-sm form-control" type="text" name="{$name}" value="{$marketplace}"/>
         </td>
         <td colspan="10"></td>
     {/form_field}

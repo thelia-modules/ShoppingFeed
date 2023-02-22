@@ -37,20 +37,25 @@ class ProductSaleElementsFormExtend implements EventSubscriberInterface
      */
     public function extendPseForm(TheliaFormEvent $event)
     {
-        $event
-            ->getForm()
-            ->getFormBuilder()
-            ->addEventListener(FormEvents::POST_SUBMIT, [$this, 'handleExtendedData'], 0);
+        $formBuilder = $event->getForm()->getFormBuilder();
 
-        $event->getForm()->getFormBuilder()
-            ->add(
-                'marketplace',
+        $formBuilder->addEventListener(FormEvents::POST_SUBMIT, [$this, 'handleExtendedData'], 0);
+
+        if (!$formData = $formBuilder->getForm()->get('product_sale_element_id')->getData()) {
+            $formRequest = $event->getForm()->getRequest()->get('thelia_product_sale_element_update_form');
+            $formData = $formRequest['product_sale_element_id'];
+        }
+
+        foreach ($formData as $pseId) {
+            $formBuilder->add(
+                'marketplace_pse' . $pseId,
                 TextType::class,
                 [
-                    "label"=> Translator::getInstance()->trans("MarketPlace", [], ShoppingFeed::DOMAIN_NAME),
+                    "label" => Translator::getInstance()->trans("MarketPlace", [], ShoppingFeed::DOMAIN_NAME),
                     "required" => false,
                 ]
             );
+        }
     }
 
     /**
@@ -69,13 +74,14 @@ class ProductSaleElementsFormExtend implements EventSubscriberInterface
         $data = $formEvent->getData();
 
         if (is_array($data['product_sale_element_id'])) {
-            foreach (array_keys($data['product_sale_element_id']) as $idx) {
+            foreach ($data['product_sale_element_id'] as $idx) {
+
                 $pseMarkeplace = ShoppingfeedPseMarketplaceQuery::create()
-                    ->filterByPseId($data['product_sale_element_id'][$idx])
+                    ->filterByPseId($idx)
                     ->findOneOrCreate();
 
-                $pseMarkeplace->setPseId($data['product_sale_element_id'][$idx]);
-                $pseMarkeplace->setMarketplace($data['marketplace'][$idx]);
+                $pseMarkeplace->setPseId($idx);
+                $pseMarkeplace->setMarketplace($data['marketplace_pse' . $idx]);
                 $pseMarkeplace->save();
             }
         }

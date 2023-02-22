@@ -113,7 +113,7 @@ class FeedService
 
                 foreach ($productSaleElementss as $productSaleElements) {
                     $pseMarketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($productSaleElements->getId())->findOne();
-                    $reference = $productSaleElements->getEanCode() !== null ? $productSaleElements->getEanCode() : $productSaleElements->getRef();
+                    $reference = $productSaleElements->getEanCode() ?: $productSaleElements->getRef();
 
                     $variation = $productOut->createVariation();
                     $variation
@@ -141,12 +141,14 @@ class FeedService
                     $pseExtraFieldEvent = new FeedPseExtraFieldEvent();
                     $pseExtraFieldEvent->setPse($productSaleElements);
                     $pseExtraFieldEvent->setVariation($variation);
+
                     $this->eventDispatcher->dispatch($pseExtraFieldEvent, FeedPseExtraFieldEvent::SHOPPINGFEED_FEED_PSE_EXTRA_FIELD);
                 }
 
                 $productExtraFieldEvent = new FeedProductExtraFieldEvent();
                 $productExtraFieldEvent->setProduct($productOut);
                 $productExtraFieldEvent->setProductModel($productIn);
+
                 $this->eventDispatcher->dispatch($productExtraFieldEvent, FeedProductExtraFieldEvent::SHOPPINGFEED_FEED_PRODUCT_EXTRA_FIELD);
             });
 
