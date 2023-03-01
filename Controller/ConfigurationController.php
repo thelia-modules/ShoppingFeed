@@ -5,11 +5,9 @@ namespace ShoppingFeed\Controller;
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
 use ShoppingFeed\Model\ShoppingfeedLogQuery;
 use ShoppingFeed\Model\ShoppingfeedMappingDeliveryQuery;
-use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Service\LogService;
 use ShoppingFeed\Service\MappingDeliveryService;
 use Thelia\Controller\Admin\BaseAdminController;
-use Thelia\Model\ModuleQuery;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**

@@ -2,7 +2,6 @@
 
 namespace ShoppingFeed\Service;
 
-use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 use ShoppingFeed\Event\OrderCreatedEvent;
 use ShoppingFeed\Exception\ShoppingfeedException;
@@ -14,17 +13,12 @@ use ShoppingFeed\Sdk\Api\Order\OrderOperation;
 use ShoppingFeed\ShoppingFeed;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\Event\Customer\CustomerCreateOrUpdateEvent;
-use Thelia\Core\Event\Customer\CustomerEvent;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
-use Thelia\Model\Address;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CurrencyQuery;
-use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
-use Thelia\Model\CustomerTitle;
-use Thelia\Model\CustomerTitleI18nQuery;
 use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Map\OrderTableMap;

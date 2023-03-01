@@ -22,7 +22,7 @@
             <email>jcournut@openstudio.fr</email>
         </author>
     </authors>
-    <type>classic</type>
+    <type>payment</type>
     <thelia>2.5.0</thelia>
     <stability>other</stability>
     <mandatory>0</mandatory>
