@@ -12,8 +12,11 @@
 
 namespace ShoppingFeed;
 
+use Exception;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\Exception\PropelException;
 use ShoppingFeed\Model\ShoppingfeedFeedQuery;
+use SplFileInfo;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Symfony\Component\Finder\Finder;
 use Thelia\Install\Database;
@@ -23,11 +26,11 @@ use Thelia\Module\AbstractPaymentModule;
 class ShoppingFeed extends AbstractPaymentModule
 {
     /** @var string */
-    const DOMAIN_NAME = 'shoppingfeed';
+    public const DOMAIN_NAME = 'shoppingfeed';
 
     /**
      * @param ConnectionInterface|null $con
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
     public function postActivation(ConnectionInterface $con = null): void
     {
@@ -53,7 +56,7 @@ class ShoppingFeed extends AbstractPaymentModule
 
         $database = new Database($con);
 
-        /** @var \SplFileInfo $file */
+        /** @var SplFileInfo $file */
         foreach ($finder as $file) {
             if (version_compare($currentVersion, $file->getBasename('.sql'), '<')) {
                 $database->insertSql(null, [$file->getPathname()]);
@@ -65,13 +68,9 @@ class ShoppingFeed extends AbstractPaymentModule
     {
     }
 
-    public function isValidPayment()
+    public function isValidPayment(): bool
     {
-    }
-
-    public function manageStockOnCreation()
-    {
-        return true;
+        return false;
     }
 
     public static function configureServices(ServicesConfigurator $servicesConfigurator): void

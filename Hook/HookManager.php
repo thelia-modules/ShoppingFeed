@@ -2,10 +2,12 @@
 
 namespace ShoppingFeed\Hook;
 
+use Propel\Runtime\Exception\PropelException;
 use ShoppingFeed\Model\ShoppingfeedOrderDataQuery;
 use ShoppingFeed\Model\ShoppingfeedProductMarketplaceCategoryQuery;
 use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use ShoppingFeed\Service\LogService;
+use ShoppingFeed\ShoppingFeed;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 use Thelia\Model\OrderQuery;
@@ -16,14 +18,23 @@ use Thelia\Model\OrderQuery;
  */
 class HookManager extends BaseHook
 {
-    private $logService;
+    private LogService $logService;
 
     public function __construct(LogService $logService)
     {
         $this->logService = $logService;
     }
 
-    public function renderLogs(HookRenderEvent $event)
+    public function onModulesListConfiguration(HookRenderEvent $event): void{
+        $event->add($this->render(
+            'shoppingfeed/js/modules-list-js.html',
+            [
+                'moduleId' => ShoppingFeed::getModuleId()
+            ]
+        ));
+    }
+
+    public function renderLogs(HookRenderEvent $event): void
     {
         $event->add($this->render(
             'shoppingfeed/hook/home-bottom.html',
@@ -33,7 +44,7 @@ class HookManager extends BaseHook
         ));
     }
 
-    public function renderJs(HookRenderEvent $event)
+    public function renderJs(HookRenderEvent $event): void
     {
         $event->add($this->render(
             'shoppingfeed/js/home-js.html',
@@ -43,13 +54,13 @@ class HookManager extends BaseHook
         ));
     }
 
-    public function onMainHeadCss(HookRenderEvent $event)
+    public function onMainHeadCss(HookRenderEvent $event): void
     {
         $content = $this->addCSS('shoppingfeed/css/style.css');
         $event->add($content);
     }
 
-    public function onPseMarketPlaceEdit(HookRenderEvent $event)
+    public function onPseMarketPlaceEdit(HookRenderEvent $event): void
     {
         $marketplace = ShoppingfeedPseMarketplaceQuery::create()->filterByPseId($event->getArgument('pse'))->findOne();
         $event->add($this->render(
@@ -61,7 +72,7 @@ class HookManager extends BaseHook
         ));
     }
 
-    public function onProductEdit(HookRenderEvent $event)
+    public function onProductEdit(HookRenderEvent $event): void
     {
         $marketplaceCategory = ShoppingfeedProductMarketplaceCategoryQuery::create()->filterByProductId($event->getArgument('product_id'))->findOne();
         $event->add($this->render(
@@ -72,7 +83,10 @@ class HookManager extends BaseHook
         ));
     }
 
-    public function onOrderEdit(HookRenderEvent $event)
+    /**
+     * @throws PropelException
+     */
+    public function onOrderEdit(HookRenderEvent $event): void
     {
         $orderId = $event->getArgument("order_id");
         $order = OrderQuery::create()->filterById($orderId)->findOne();

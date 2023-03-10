@@ -1,0 +1,17 @@
+<script>
+    const moduleId = {$moduleId|@json_encode nofilter};
+    const eltName = 'module-' + moduleId;
+    const shoppingFeedLineElt = document.getElementById(eltName);
+
+    const captions = Array.from(document.getElementsByTagName('caption'));
+    let tableModulesClassic;
+    captions.forEach(caption => {
+        if(caption.innerText === "MODULES CLASSIC") {
+            tableModulesClassic = caption.parentElement;
+            return;
+        }
+    });
+
+    const bodyTable = tableModulesClassic?.querySelector('tbody');
+    bodyTable?.append(shoppingFeedLineElt);
+</script>
