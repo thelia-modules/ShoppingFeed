@@ -5,6 +5,7 @@ namespace ShoppingFeed\Service;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
 use ShoppingFeed\Event\OrderCreatedEvent;
+use ShoppingFeed\Event\ShoppingFeedCustomerEvent;
 use ShoppingFeed\Exception\ShoppingfeedException;
 use ShoppingFeed\Model\ShoppingfeedCustomerTitleChannelQuery;
 use ShoppingFeed\Model\ShoppingfeedFeed;
@@ -340,7 +341,7 @@ class OrderService
             $lang->getId()
         );
 
-        $this->eventDispatcher->dispatch($customerEvent, TheliaEvents::CUSTOMER_CREATEACCOUNT);
+        $this->saveCustomer($customerEvent);
 
         $customer = $customerEvent->getCustomer();
 
@@ -350,5 +351,44 @@ class OrderService
             ->save();
 
         return $customer;
+    }
+
+    /**
+     * @param CustomerCreateOrUpdateEvent $customerEvent
+     * @return CustomerCreateOrUpdateEvent
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    protected function saveCustomer(CustomerCreateOrUpdateEvent $customerEvent)
+    {
+        $customer = new Customer();
+
+        //need to copy this to create customer from command and shunt Recaptcha check event
+        $customer->createOrUpdate(
+            $customerEvent->getTitle(),
+            $customerEvent->getFirstname(),
+            $customerEvent->getLastname(),
+            $customerEvent->getAddress1(),
+            $customerEvent->getAddress2(),
+            $customerEvent->getAddress3(),
+            $customerEvent->getPhone(),
+            $customerEvent->getCellphone(),
+            $customerEvent->getZipcode(),
+            $customerEvent->getCity(),
+            $customerEvent->getCountry(),
+            $customerEvent->getEmail(),
+            $customerEvent->getPassword(),
+            $customerEvent->getLangId(),
+            $customerEvent->getReseller(),
+            $customerEvent->getSponsor(),
+            $customerEvent->getDiscount(),
+            $customerEvent->getCompany(),
+            $customerEvent->getRef(),
+            $customerEvent->getEmailUpdateAllowed(),
+            $customerEvent->getState()
+        );
+
+        $customerEvent->setCustomer($customer);
+
+        return $customerEvent;
     }
 }
