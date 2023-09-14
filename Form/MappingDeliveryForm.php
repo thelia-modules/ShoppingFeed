@@ -20,9 +20,6 @@ class MappingDeliveryForm extends BaseForm
                 "code",
                 TextType::class,
                 [
-                    "constraints" => [
-                        new Constraints\NotBlank(),
-                    ],
                     "label"=> Translator::getInstance()->trans("Code", [], ShoppingFeed::DOMAIN_NAME),
                     "required" => true,
                 ]

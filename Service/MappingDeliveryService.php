@@ -9,16 +9,16 @@ class MappingDeliveryService
 {
     public function getDeliveryModuleIdFromCode($code)
     {
-        if ($code === "") {
-            return ShoppingFeed::getModuleId();
-        }
-        $mappingDeliveries = ShoppingfeedMappingDeliveryQuery::create()->find();
 
-        foreach ($mappingDeliveries as $mappingDelivery) {
-            if ($mappingDelivery->getCode() === $code) {
-                return $mappingDelivery->getModuleId();
-            }
+        if ($code === "") {
+            $code = null;
         }
-        return 0;
+        $mappingDelivery = ShoppingfeedMappingDeliveryQuery::create()->findOneByCode($code);
+
+        if ($mappingDelivery === null) {
+            return 0;
+        }
+
+        return $mappingDelivery->getModuleId();
     }
 }
