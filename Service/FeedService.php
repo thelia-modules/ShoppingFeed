@@ -10,6 +10,7 @@ use ShoppingFeed\Feed\ProductGenerator;
 use ShoppingFeed\Model\ShoppingfeedFeed;
 use ShoppingFeed\Model\ShoppingfeedPseMarketplaceQuery;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Thelia\Core\Event\Image\ImageEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Thelia;
@@ -38,6 +39,8 @@ class FeedService
     public function generateFeed(ShoppingfeedFeed $feed)
     {
         $productFeedResult = null;
+        $filesystem = new Filesystem();
+        $tmpFile = null;
         try {
             $feedFilePrefix = $feed->getFeedFilePrefix();
             $country = $feed->getCountry();
@@ -153,21 +156,32 @@ class FeedService
             });
 
             $products = ProductQuery::create()
+                ->filterByVisible(1)
                 ->find();
 
-            $generator->setUri('file://' . THELIA_WEB_DIR . $feedFilePrefix . '_shopping_feed.xml');
+            $finalFile = THELIA_WEB_DIR . $feedFilePrefix . '_shopping_feed.xml';
+            $tmpFile = $finalFile . '.' . uniqid('', true) . '.tmp';
+
+            $generator->setUri('file://' . $tmpFile);
 
             $generator->setValidationFlags(ProductGenerator::VALIDATE_EXCEPTION);
 
             $productFeedResult = $generator->write($products);
 
-        } catch (\Exception $exception) {
+            // Feed generation succeeded: publish it atomically, never leaving a partial file live.
+            $filesystem->rename($tmpFile, $finalFile, true);
+
+        } catch (\Throwable $exception) {
             $this->logger->log(
                 'Error during xml generation : ' . $exception->getMessage(),
                 LogService::LEVEL_ERROR,
                 $feed
             );
             return null;
+        } finally {
+            if (null !== $tmpFile && $filesystem->exists($tmpFile)) {
+                $filesystem->remove($tmpFile);
+            }
         }
 
         $this->logger->log(
