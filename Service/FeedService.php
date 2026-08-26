@@ -49,6 +49,33 @@ class FeedService
             $generator = (new ProductGenerator())
                 ->setPlatform("Thelia", Thelia::THELIA_VERSION);
 
+            $generator->addFilter(function (\Thelia\Model\Product $productIn) use ($feed) {
+                $hasPricedSaleElements = ProductSaleElementsQuery::create()
+                    ->useProductPriceQuery()
+                    ->endUse()
+                    ->filterByProductId($productIn->getId())
+                    ->count() > 0;
+
+                if (!$hasPricedSaleElements) {
+                    $this->logger->log(
+                        sprintf(
+                            'Product #%d (%s) skipped: no priced sale elements found.',
+                            $productIn->getId(),
+                            $productIn->getRef()
+                        ),
+                        LogService::LEVEL_WARNING,
+                        $feed,
+                        $productIn->getId(),
+                        'product',
+                        $productIn->getRef()
+                    );
+
+                    return false;
+                }
+
+                return true;
+            });
+
             $generator->addMapper(function (\Thelia\Model\Product $productIn, Product $productOut) use ($country, $lang) {
 
                 $locale = $lang->getLocale();
